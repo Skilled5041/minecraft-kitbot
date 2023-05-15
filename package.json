@@ -1,0 +1,28 @@
+{
+  "name": "minecraft-kitbot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@datastructures-js/priority-queue": "^6.2.0",
+    "@supabase/supabase-js": "^2.21.0",
+    "chalk": "^5.2.0",
+    "cross-spawn": "^7.0.3",
+    "dotenv": "^16.0.3",
+    "mathjs": "^11.8.0",
+    "mineflayer": "^4.8.1",
+    "mineflayer-movement": "^0.4.4",
+    "mineflayer-tps": "^1.0.1",
+    "prismarine-viewer": "^1.25.0"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^8.0.0"
+  }
+}

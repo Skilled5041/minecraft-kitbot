@@ -1,0 +1,6 @@
+*.env
+node_modules
+test*.js
+logs/*
+.idea
+*.js
