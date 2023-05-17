@@ -20,7 +20,16 @@ const webhookClient = new WebhookClient({
 });
 
 client.once(Events.ClientReady, (c) => {
-    console.log(`Logged in as ${c.user.tag}`);
+    console.log(chalk.cyan(`Logged in as ${c.user.tag}`));client.user?.setPresence({
+        status: "online",
+        activities: [{
+            name: "0b0t.org",
+            url: "https://0b0t.org",
+            // @ts-ignore
+            type: "PLAYING"
+        }]
+    });
+
 });
 
 void client.login(process.env.DISCORD_BOT_TOKEN);
@@ -29,7 +38,7 @@ void client.login(process.env.DISCORD_BOT_TOKEN);
 const createModifiedBot = (options: Options, prefix: string, admins: string[]): Bot => {
     const bot: Bot = createBot({
         host: options.host,
-        username: "Solarion2",
+        username: "solarion2",
         version: options.version,
         auth: options.auth,
         chatLengthLimit: 256,
