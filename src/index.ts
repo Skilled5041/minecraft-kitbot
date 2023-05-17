@@ -1,4 +1,4 @@
-import { BotEvents, createBot } from "mineflayer";
+import mineflayer, { BotEvents, createBot } from "mineflayer";
 import { mineflayer as mineflayerViewer } from "prismarine-viewer";
 import * as movement from "mineflayer-movement";
 import * as fs from "fs";
@@ -7,12 +7,29 @@ import { Bot, Options } from "./customTypes.js";
 import { ChatCommand } from "./events/chat/chatCommand.js";
 import { ChatTrigger } from "./events/message/messageTrigger.js";
 import createTpsPlugin from "mineflayer-tps";
-import mineflayer from "mineflayer";
+import { Client, Events, IntentsBitField, WebhookClient } from "discord.js";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+const intents = new IntentsBitField([IntentsBitField.Flags.Guilds, IntentsBitField.Flags.GuildMessages]);
+const client = new Client({intents});
+const webhookClient = new WebhookClient({
+    url: process.env.DISCORD_WEBHOOK_URL ?? "",
+    token: process.env.DISCORD_BOT_TOKEN ?? ""
+});
+
+client.once(Events.ClientReady, (c) => {
+    console.log(`Logged in as ${c.user.tag}`);
+});
+
+void client.login(process.env.DISCORD_BOT_TOKEN);
+
 
 const createModifiedBot = (options: Options, prefix: string, admins: string[]): Bot => {
     const bot: Bot = createBot({
         host: options.host,
-        username: "solarion2",
+        username: "Solarion2",
         version: options.version,
         auth: options.auth,
         chatLengthLimit: 256,
@@ -78,12 +95,11 @@ if (!bot.chatCommands) {
 }
 
 const eventFiles: string[] = fs.readdirSync("./src/events").filter(file => file.includes(".js"));
-
 for (const file of eventFiles) {
     const eventName: string = file.split(".")[0];
     const event = (await import(`./events/${eventName}.js`)).default;
 
-    bot.on(eventName as keyof BotEvents, event.bind(null, bot));
+    bot.on(eventName as keyof BotEvents, event.bind(null, bot, client, webhookClient));
     console.log(chalk.blueBright(`Registered event "${eventName}"`));
 }
 

@@ -15,6 +15,7 @@
     "@supabase/supabase-js": "^2.21.0",
     "chalk": "^5.2.0",
     "cross-spawn": "^7.0.3",
+    "discord.js": "^14.11.0",
     "dotenv": "^16.0.3",
     "mathjs": "^11.8.0",
     "mineflayer": "^4.8.1",

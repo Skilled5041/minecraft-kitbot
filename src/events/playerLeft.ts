@@ -1,8 +1,10 @@
 import { Bot } from "../customTypes.js";
 import { Player } from "mineflayer";
+import { Client, TextChannel, WebhookClient } from "discord.js";
 
-export default (bot: Bot, player: Player) => {
-    // if (player.username === bot.username) return;
-    // if (Date.now() - (bot.startTime ?? 32515012887) < 10000) return;
-    // bot.chat(`${player.username} has left the server`);
+export default (bot: Bot, discordBot: Client, webhookClient: WebhookClient, player: Player) => {
+    if (player.username === bot.username) return;
+    if (Date.now() - (bot.startTime ?? 32515012887) < 10000) return;
+    const bridgeChannel = discordBot.channels.cache.get("1108054000789626951") as TextChannel | undefined;
+    void bridgeChannel?.send(`**${player.username}** left the game.`);
 }

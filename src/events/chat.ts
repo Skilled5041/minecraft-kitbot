@@ -1,6 +1,7 @@
 import { Bot } from "../customTypes.js";
+import { Client, WebhookClient } from "discord.js";
 
-export default (bot: Bot, username: string, message: string) => {
+export default (bot: Bot, discordBot: Client, webhookClient: WebhookClient, username: string, message: string) => {
     if (!bot.prefix) return;
     if (username === bot.username) return;
     if (!message.startsWith(bot.prefix ?? "")) return;
@@ -19,5 +20,5 @@ export default (bot: Bot, username: string, message: string) => {
         return;
     }
 
-    cmd.run(bot, username, args);
+    cmd.run(bot, username, args, discordBot, webhookClient);
 };
