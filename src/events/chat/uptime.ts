@@ -1,10 +1,10 @@
-import { ChatCommand } from "./chatCommand.js";
+import { ChatCommand } from "./cat_command.js";
 
 export default <ChatCommand>{
     name: "uptime",
     description: "Shows the bot's uptime.",
     usage: "<prefix>uptime",
-    run: async (bot) => {
+    execute: async (bot) => {
         const botStartTime = bot.startTime;
         const botUptime = Date.now() - (botStartTime ?? 0);
 

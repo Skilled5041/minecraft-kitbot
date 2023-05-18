@@ -1,4 +1,4 @@
-import { ChatCommand } from "./chatCommand.js";
+import { ChatCommand } from "./cat_command.js";
 import { waitForTPAccept } from "../../utils/teleport.js";
 import { takeItemFromContainer } from "../../utils/containers.js";
 
@@ -7,7 +7,7 @@ export default <ChatCommand> {
     description: "Gives you a dupe kit.",
     usage: "<prefix>dupekit",
     aliases: ["dupe", "dk"],
-    run: async (bot, username) => {
+    execute: async (bot, username) => {
         await takeItemFromContainer(bot, ["chest", "trapped_chest"]);
         bot.chat(`/tpa ${username}`);
         bot.chat(`/w ${username} Type /tpy ${bot.username} to receive the dupe kit.`);

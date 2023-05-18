@@ -1,5 +1,5 @@
-import { ChatCommand } from "./chatCommand.js";
-import { Bot } from "../../customTypes.js";
+import { ChatCommand } from "./cat_command.js";
+import { Bot } from "mineflayer"
 
 const waitForNameColours = (bot: Bot, username: string, message: any) => {
     if (message.toString().startsWith("<NC> Usage: /nc <COLOR")) {
@@ -25,7 +25,7 @@ export default <ChatCommand>{
     aliases: ["snc", "setnamecolor", "setnc"],
     adminOnly: true,
     hideFromHelp: true,
-    run: (bot, username, args) => {
+    execute: (bot, username, args) => {
         if (args.length === 0) {
             bot.chat("/nc");
             bot.on("message", waitForNameColours.bind(null, bot, username));

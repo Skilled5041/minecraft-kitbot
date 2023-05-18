@@ -1,11 +1,11 @@
-import { ChatCommand } from "./chatCommand.js";
+import { ChatCommand } from "./cat_command.js";
 
 export default <ChatCommand>{
     name: "discordNitroCode",
     usage: "<prefix>discordNitroCode",
     description: "Sends a discord nitro code",
     aliases: ["nitro", "nitroCode"],
-    run: (bot) => {
+    execute: (bot) => {
         const uppercaseCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         let token = "";
 

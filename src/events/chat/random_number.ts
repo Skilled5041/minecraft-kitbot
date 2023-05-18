@@ -1,11 +1,11 @@
-import { ChatCommand } from "./chatCommand.js";
+import { ChatCommand } from "./cat_command.js";
 
 export default <ChatCommand>{
     name: "randomnumber",
     description: "Sends a random number between <min> and <max> (inclusive).",
     usage: "<prefix>randomnumber <min> <max>",
     aliases: ["random", "randomnum", "rand", "randnum"],
-    run: (bot, _, args) => {
+    execute: (bot, _, args) => {
         if (args.length < 2) {
             bot.chat("Please provide a minimum and maximum number.");
             return;

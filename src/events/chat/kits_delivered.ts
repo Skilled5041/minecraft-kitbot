@@ -1,4 +1,4 @@
-import { ChatCommand } from "./chatCommand.js";
+import { ChatCommand } from "./cat_command.js";
 import supabase from "../../utils/supabase.js";
 
 export default <ChatCommand> {
@@ -6,7 +6,7 @@ export default <ChatCommand> {
     description: "Gets the total number of kits delivered.",
     usage: "<prefix>kitsdelivered",
     aliases: ["kits_delivered", "kd", "deliveredcount"],
-    run: async (bot) => {
+    execute: async (bot) => {
         const {data: kits_delivered, error: err1} = await supabase
             .from("stats")
             .select("kits_delivered");

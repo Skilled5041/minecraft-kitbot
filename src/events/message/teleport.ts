@@ -1,4 +1,4 @@
-import { ChatTrigger } from "./messageTrigger.js";
+import { ChatTrigger } from "./message_trigger.js";
 
 export default <ChatTrigger>{
     name: "Tpa Accept",
@@ -9,7 +9,7 @@ export default <ChatTrigger>{
             ?.some((admin) => message.toLowerCase().
             includes(`type /tpy ${admin} to accept or /tpn ${admin} to deny.`));
     },
-    run: async (bot, message) => {
+    execute: async (bot, message) => {
         bot.chat(`/tpy ${message.split(" ")[2]}`);
     }
 };

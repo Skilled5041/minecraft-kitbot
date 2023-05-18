@@ -1,11 +1,11 @@
-import { ChatCommand } from "./chatCommand.js";
+import { ChatCommand } from "./cat_command.js";
 import { faker } from "@faker-js/faker";
 
 export default <ChatCommand>{
     name: "dox",
     description: "Doxxes someone",
     usage: "dox <user>",
-    run: (bot, username, args) => {
+    execute: (bot, username, args) => {
         const user = args[0];
         if (!user) {
             return bot.chat("Please specify a user to dox");

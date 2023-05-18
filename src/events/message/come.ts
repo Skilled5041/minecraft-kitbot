@@ -1,5 +1,5 @@
-import { ChatTrigger } from "./messageTrigger.js";
-import { Bot } from "../../customTypes.js";
+import { ChatTrigger } from "./message_trigger.js";
+import { Bot } from "mineflayer"
 
 const waitForAccept = (bot: Bot, message: any) => {
     if (message.toString().startsWith("Teleported to")) {
@@ -18,7 +18,7 @@ export default <ChatTrigger>{
         return message.trim().includes("whispers: come") &&
             bot.admins?.some((admin) => message.toLowerCase().includes(`${admin.toLowerCase()} whispers: come`));
     },
-    run: (bot, message) => {
+    execute: (bot, message) => {
         bot.chat(`/tpa ${message.split(" ")[0]}`);
         bot.on("message", waitForAccept.bind(null, bot));
     }

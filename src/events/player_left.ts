@@ -1,4 +1,4 @@
-import { Bot }  from "../customTypes.js";
+import { Bot } from "mineflayer"
 import { Player } from "mineflayer";
 import { Client, EmbedBuilder, TextChannel, WebhookClient } from "discord.js";
 
@@ -8,7 +8,8 @@ export default (bot: Bot, discordBot: Client, webhookClient: WebhookClient, play
     const bridgeChannel = discordBot.channels.cache.get("1108054000789626951") as TextChannel | undefined;
     void bridgeChannel?.send({
         embeds: [new EmbedBuilder()
-            .setColor("Green")
-            .setDescription(`**${player.username}** joined the game.`)]
+            .setColor("Red")
+            .setDescription(`**${player.username}** left the game.`)]
     });
+
 }

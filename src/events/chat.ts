@@ -1,4 +1,4 @@
-import { Bot } from "../customTypes.js";
+import { Bot } from "mineflayer";
 import { Client, WebhookClient } from "discord.js";
 
 export default (bot: Bot, discordBot: Client, webhookClient: WebhookClient, username: string, message: string) => {
@@ -20,5 +20,5 @@ export default (bot: Bot, discordBot: Client, webhookClient: WebhookClient, user
         return;
     }
 
-    cmd.run(bot, username, args, discordBot, webhookClient);
+    cmd.execute(bot, username, args, discordBot, webhookClient);
 };

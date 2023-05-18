@@ -1,6 +1,6 @@
-import { Bot } from "../customTypes.js";
+import { Bot } from "mineflayer";
 import { Client, ColorResolvable, EmbedBuilder, WebhookClient } from "discord.js";
-import { isDeathMessage, isPlayerMessage } from "../utils/chatMessageRegex.js";
+import { isDeathMessage, isPlayerMessage } from "../utils/chat_message_regexes.js";
 
 // TODO: Make this use regexes
 const filter = (message: String) => {
@@ -14,8 +14,6 @@ const filter = (message: String) => {
 };
 
 export default (bot: Bot, discordBot: Client, webhookClient: WebhookClient, message: any) => {
-    console.log(message.toAnsi());
-
     const isPlayer = isPlayerMessage.exec(message.toString().trim());
 
     if (isPlayer && message.toString().trim() != "") {
@@ -53,7 +51,7 @@ export default (bot: Bot, discordBot: Client, webhookClient: WebhookClient, mess
 
     for (const trigger of bot.messageTriggers?.values() ?? []) {
         if (trigger.trigger(bot, message.toString())) {
-            trigger.run(bot, message.toString(), discordBot, webhookClient);
+            trigger.execute(bot, message.toString(), discordBot, webhookClient);
         }
     }
 }

@@ -1,11 +1,11 @@
-import { ChatCommand } from "./chatCommand.js";
+import { ChatCommand } from "./cat_command.js";
 
 export default <ChatCommand>{
     name: "discordToken",
     usage: "<prefix>discordToken <token>",
     description: "Sends a discord token",
     aliases: ["token"],
-    run: (bot) => {
+    execute: (bot) => {
         const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         const randomCharacter = (characters: string) => characters.charAt(Math.floor(Math.random() * characters.length));
 

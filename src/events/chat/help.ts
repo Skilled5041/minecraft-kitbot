@@ -1,14 +1,14 @@
-import { ChatCommand } from "./chatCommand.js";
+import { ChatCommand } from "./cat_command.js";
 
 export default <ChatCommand>{
     name: "help",
     description: "Shows a list of commands.",
     usage: "<prefix>help [command_name | page_number]",
-    run: async (bot, username, args) => {
+    execute: async (bot, username, args) => {
         if (args.length === 0 || !isNaN(Number(args[0]))) {
-            const commandHelp: string = "Use ${bot.prefix}help [command_name] to get more information about a command." +
-                " <prefix> is the prefix of the bot. <> are required arguments." +
-                " [] are optional arguments."
+            // const commandHelp: string = "Use ${bot.prefix}help [command_name] to get more information about a command." +
+            //     " <prefix> is the prefix of the bot. <> are required arguments." +
+            //     " [] are optional arguments."
 
             const page = Number(args[0]) || 1;
             let str = "Commands: ";

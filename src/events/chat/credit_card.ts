@@ -1,4 +1,4 @@
-import { ChatCommand } from "./chatCommand.js";
+import { ChatCommand } from "./cat_command.js";
 import { faker } from "@faker-js/faker";
 
 export default <ChatCommand>{
@@ -6,7 +6,7 @@ export default <ChatCommand>{
     usage: "creditcard",
     description: "Gives you information of a random credit card.",
     aliases: ["cc", "credit", "credit-card", "credit_card"],
-    run: (bot) => {
+    execute: (bot) => {
         const issuer = faker.finance.creditCardIssuer();
         const cardNumber = faker.finance.creditCardNumber({issuer});
         const cvv = faker.finance.creditCardCVV();

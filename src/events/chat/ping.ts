@@ -1,10 +1,10 @@
-import { ChatCommand } from "./chatCommand.js";
+import { ChatCommand } from "./cat_command.js";
 
 export default <ChatCommand>{
     name: "ping",
     description: "Shows the ping of the specified player. Shows the users ping if the player is not specified",
     usage: "<prefix>ping [player]",
-    run: (bot, username, args) => {
+    execute: (bot, username, args) => {
         if (args.length === 0) {
             return bot.chat(`Your ping is ${bot.players[username]?.ping ?? "unknown"}`);
         }
