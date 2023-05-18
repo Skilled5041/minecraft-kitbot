@@ -3,7 +3,7 @@ import { Client, WebhookClient } from "discord.js";
 
 export default (bot: Bot, discordBot: Client, webhookClient: WebhookClient, username: string, message: string) => {
     if (!bot.prefix) return;
-    if (username === bot.username) return;
+    if (username.toLowerCase() === bot.username.toLowerCase()) return;
     if (!message.startsWith(bot.prefix ?? "")) return;
 
     const args = message.slice(bot.prefix.length).trim().split(/ +/g);
