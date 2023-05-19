@@ -7,5 +7,5 @@ export interface SlashCommand {
     adminOnly?: boolean;
     data: SlashCommandBuilder;
 
-    execute: (minecraftBot: Bot, discordClient: Client, interaction: ChatInputCommandInteraction) => void;
+    execute: (minecraftBot: Bot, discordClient: Client, interaction: ChatInputCommandInteraction) => Promise<void>
 }
