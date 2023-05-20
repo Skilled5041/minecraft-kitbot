@@ -2,7 +2,6 @@ import { SlashCommand } from "./slash_command.js";
 import { SlashCommandBuilder } from "discord.js";
 import supabase from "../utils/supabase.js";
 import { usernameToUUID } from "../utils/minecraft_players.js";
-import { getDiscordUserStatus, getMinecraftUserStatus } from "../utils/user_status.js";
 
 export default <SlashCommand>{
     ownerOnly: true,
@@ -41,7 +40,7 @@ export default <SlashCommand>{
         if (discordUser) {
             const id = discordUser.id;
 
-            const status = await getDiscordUserStatus(minecraftBot, discordClient, id);
+            const status = await discordClient.getDiscordUserStatus(id);
             if (status === "blacklisted") {
                 return await interaction.reply({
                     content: `Failed to whitelist user: User is blacklisted`,
@@ -79,7 +78,7 @@ export default <SlashCommand>{
                 });
             }
 
-            const status = await getMinecraftUserStatus(minecraftBot, discordClient, minecraftUsername);
+            const status = await minecraftBot.getMinecraftUserStatus(minecraftUsername);
             if (status === "blacklisted") {
                 return await interaction.reply({
                     content: `Failed to whitelist user: User is blacklisted`,

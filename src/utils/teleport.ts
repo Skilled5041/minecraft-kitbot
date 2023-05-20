@@ -1,7 +1,7 @@
-import { Bot } from "mineflayer";
 import supabase from "./supabase.js";
+import { ExtendedMinecraftBot } from "../modified_clients.js";
 
-export const waitForTPAccept = async (minecraftBot: Bot, message: any) => {
+export const waitForTPAccept = async (minecraftBot: ExtendedMinecraftBot, message: any) => {
     if (message.extra?.[0].toString() === "Teleported to ") {
         minecraftBot.safeChat("/kill");
         minecraftBot.removeListener("message", waitForTPAccept.bind(null, minecraftBot));

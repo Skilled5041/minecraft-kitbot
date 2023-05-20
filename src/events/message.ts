@@ -1,7 +1,8 @@
-import { Bot, BotEvents } from "mineflayer";
-import { Client, ColorResolvable, EmbedBuilder, WebhookClient } from "discord.js";
+import { BotEvents } from "mineflayer";
+import { ColorResolvable, EmbedBuilder, WebhookClient } from "discord.js";
 import { isDeathMessage, isPlayerMessage } from "../utils/chat_message_regexes.js";
 import { MineflayerEvent } from "./mineflayer_events.js";
+import { ExtendedDiscordClient, ExtendedMinecraftBot } from "../modified_clients.js";
 
 type ChatMessage = Parameters<BotEvents["message"]>[0];
 
@@ -19,7 +20,7 @@ const filter = (message: string) => {
 
 export default <MineflayerEvent>{
     name: "message",
-    async handler(minecraftBot: Bot, discordClient: Client, webhookClient: WebhookClient, message: ChatMessage) {
+    async handler(minecraftBot: ExtendedMinecraftBot, discordClient: ExtendedDiscordClient, webhookClient: WebhookClient, message: ChatMessage) {
         const isPlayer = isPlayerMessage.exec(message.toString().trim());
 
         if (isPlayer && message.toString().trim() != "") {

@@ -1,4 +1,4 @@
-import mineflayer, { Bot, BotEvents, createBot, BotOptions } from "mineflayer";
+import mineflayer, { BotEvents } from "mineflayer";
 import { mineflayer as mineflayerViewer } from "prismarine-viewer";
 import * as movement from "mineflayer-movement";
 import * as fs from "fs";
@@ -6,56 +6,18 @@ import chalk from "chalk";
 import { ChatCommand } from "./events/chat/chat_command.js";
 import { ChatTrigger } from "./events/message/message_trigger.js";
 import createTpsPlugin from "mineflayer-tps";
-import { Client, Collection, Events, IntentsBitField, WebhookClient } from "discord.js";
+import { Events, IntentsBitField, WebhookClient } from "discord.js";
 import { SlashCommand } from "./slash_commands/slash_command.js";
 import dotenv from "dotenv";
 import { MineflayerEvent } from "./events/mineflayer_events.js";
-import { getDiscordUserStatus } from "./utils/user_status.js";
+import { createExtendedMinecraftBot, createExtendedDiscordClient } from "./modified_clients.js";
 
-declare module "discord.js" {
-    interface Client {
-        slashCommands: Collection<string, SlashCommand>;
-        lastUserMessageTime: Map<string, number>;
-        userStatus: Map<string, UserStatus>;
-    }
-}
-
-type Success = true | false;
 export type UserStatus = "blacklisted" | "whitelisted" | "normal";
-
-declare module "mineflayer" {
-    interface Bot {
-        prefix: string;
-        admins: string[];
-        chatCommands: Map<string, ChatCommand>;
-        commandAliases: Map<string, string>;
-        messageTriggers: Map<string, ChatTrigger>;
-        startTime: number;
-        getTps: () => number;
-        userStatus: Map<string, UserStatus>;
-        messageInfo: {
-            /**
-             * The UNIX time the next must be sent after
-             */
-            minimumNextMessageTime: number | null;
-            /**
-             * The UNIX time the last message was sent by a player
-             */
-            lastPlayerCommandTime: Map<string, number>
-        };
-        commandCooldowns: Map<string, Map<string, number>>;
-        /**
-         * A wrapper for chat that prevents spam.
-         * @param message The message to send
-         */
-        safeChat: (message: string) => Success;
-    }
-}
 
 dotenv.config();
 
 const intents = new IntentsBitField([IntentsBitField.Flags.Guilds, IntentsBitField.Flags.GuildMessages]);
-const discordClient = new Client({intents});
+const discordClient = createExtendedDiscordClient({intents});
 const webhookClient = new WebhookClient({
     url: process.env.DISCORD_WEBHOOK_URL ?? "",
     token: process.env.DISCORD_BOT_TOKEN ?? ""
@@ -72,57 +34,17 @@ discordClient.once(Events.ClientReady, (c) => {
     });
 });
 
-discordClient.slashCommands = new Collection();
-discordClient.lastUserMessageTime = new Map();
-discordClient.userStatus = new Map();
-
 void discordClient.login(process.env.DISCORD_BOT_TOKEN);
 
-
-const createModifiedMinecraftBot = (options: BotOptions, prefix: string, admins: string[]): Bot => {
-    const minecraftBot: Bot = createBot({
-        host: options.host,
-        username: "solarion2",
-        version: options.version,
-        auth: options.auth,
-        chatLengthLimit: 256,
-    });
-    minecraftBot.prefix = prefix;
-    minecraftBot.admins = admins;
-    minecraftBot.chatCommands = new Map();
-    minecraftBot.messageTriggers = new Map();
-    minecraftBot.commandAliases = new Map();
-    minecraftBot.startTime = Date.now();
-    minecraftBot.admins = admins;
-    minecraftBot.commandCooldowns = new Map();
-    minecraftBot.messageInfo = {
-        minimumNextMessageTime: null,
-        lastPlayerCommandTime: new Map(),
-    };
-    minecraftBot.userStatus = new Map();
-
-    minecraftBot.safeChat = (message) => {
-        if (Date.now() < (minecraftBot.messageInfo.minimumNextMessageTime ?? 0) && !message.startsWith("/")) {
-            return false;
-        }
-
-        if (message.length > 255) {
-            return false;
-        }
-
-        minecraftBot.messageInfo.minimumNextMessageTime = Date.now() + 1000;
-        minecraftBot.chat(message);
-        return true;
-    };
-    return minecraftBot;
-};
-
-const minecraftBot: Bot = createModifiedMinecraftBot({
+const minecraftBot = createExtendedMinecraftBot({
     host: "0b0t.org",
-    username: "Solarion2",
+    username: "solarion2",
     version: "1.12.2",
     auth: "microsoft",
-}, "&", ["Solarion2", "zSkilled_"]);
+}, {
+    prefixes: ["&"],
+    admins: ["solarion2", "ZSKILLED_"],
+});
 
 const tpsPlugin = createTpsPlugin(mineflayer);
 minecraftBot.loadPlugins([movement.plugin, tpsPlugin]);
@@ -205,7 +127,7 @@ for (const file of slashCommandFiles) {
 discordClient.on(Events.InteractionCreate, async (interaction) => {
     if (!interaction.isChatInputCommand()) return;
 
-    if (await getDiscordUserStatus(minecraftBot, discordClient, interaction.user.id) === "blacklisted" && interaction.user.id !== "313816298461069313") {
+    if (await discordClient.getDiscordUserStatus(interaction.user.id) === "blacklisted" && interaction.user.id !== "313816298461069313") {
         return;
     }
 

@@ -1,17 +1,16 @@
-import { Bot } from "mineflayer";
-import { Client, WebhookClient } from "discord.js";
+import { WebhookClient } from "discord.js";
 import { MineflayerEvent } from "./mineflayer_events.js";
-import { getMinecraftUserStatus } from "../utils/user_status.js";
+import { ExtendedDiscordClient, ExtendedMinecraftBot } from "../modified_clients.js";
 
 export default <MineflayerEvent>{
     name: "chat",
-    async handler(minecraftBot: Bot, discordClient: Client, webhookClient: WebhookClient, username: string, message: string) {
+    async handler(minecraftBot: ExtendedMinecraftBot, discordClient: ExtendedDiscordClient, webhookClient: WebhookClient, username: string, message: string) {
 
-        if (!minecraftBot.prefix) return;
+        if (!minecraftBot.prefixes) return;
         if (username.toLowerCase() === minecraftBot.username.toLowerCase()) return;
-        if (!message.startsWith(minecraftBot.prefix ?? "")) return;
+        if (!minecraftBot.prefixes.some(prefix => message.startsWith(prefix))) return;
 
-        if (await getMinecraftUserStatus(minecraftBot, discordClient, username) === "blacklisted") {
+        if (await minecraftBot.getMinecraftUserStatus(username) === "blacklisted") {
             return;
         }
 
@@ -20,7 +19,7 @@ export default <MineflayerEvent>{
         }
         minecraftBot.messageInfo.lastPlayerCommandTime.set(username, Date.now());
 
-        const args = message.slice(minecraftBot.prefix.length).trim().split(/ +/g);
+        const args = message.slice(minecraftBot.prefixes.length).trim().split(/ +/g);
         const command = args.shift()?.toLowerCase();
 
         const cmd = minecraftBot.chatCommands?.get(command ?? "") ??
@@ -34,7 +33,7 @@ export default <MineflayerEvent>{
             return minecraftBot.safeChat(`You don't have permission to use this command, ${username}.`);
         }
 
-        if (cmd.whitelistedOnly && await getMinecraftUserStatus(minecraftBot, discordClient, username) !== "whitelisted") {
+        if (cmd.whitelistedOnly && await minecraftBot.getMinecraftUserStatus(username) !== "whitelisted") {
             return minecraftBot.safeChat(`/w ${username} this command is whitelist only.`);
         }
 

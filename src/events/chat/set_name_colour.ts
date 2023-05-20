@@ -1,14 +1,14 @@
 import { ChatCommand } from "./chat_command.js";
-import { Bot } from "mineflayer"
+import { ExtendedMinecraftBot } from "../../modified_clients.js";
 
-const waitForNameColours = (minecraftBot: Bot, username: string, message: any) => {
+const waitForNameColours = (minecraftBot: ExtendedMinecraftBot, username: string, message: any) => {
     if (message.toString().startsWith("<NC> Usage: /nc <COLOR")) {
         minecraftBot.removeListener("message", waitForNameColours.bind(null, minecraftBot, username));
         minecraftBot.safeChat(`/w ${username} ${message.toString().split("(")[1].replace(")", "")}`);
     }
 };
 
-const handleInvalidColour = (minecraftBot: Bot, username: string, message: any) => {
+const handleInvalidColour = (minecraftBot: ExtendedMinecraftBot, username: string, message: any) => {
     if (message.toString().startsWith("<NC> Incorrect color")) {
         minecraftBot.removeListener("message", handleInvalidColour.bind(null, minecraftBot, username));
         minecraftBot.safeChat(`/w ${username} Invalid colour`);

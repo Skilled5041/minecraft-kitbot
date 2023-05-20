@@ -1,5 +1,5 @@
-import { Bot } from "mineflayer";
-import { ChatInputCommandInteraction, Client, SlashCommandBuilder } from "discord.js";
+import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
+import { ExtendedDiscordClient, ExtendedMinecraftBot } from "../modified_clients.js";
 
 export interface SlashCommand {
     aliases?: string[];
@@ -8,5 +8,5 @@ export interface SlashCommand {
     whitelistOnly?: boolean;
     data: SlashCommandBuilder;
 
-    execute: (minecraftBot: Bot, discordClient: Client, interaction: ChatInputCommandInteraction) => Promise<void>;
+    execute: (minecraftBot: ExtendedMinecraftBot, discordClient: ExtendedDiscordClient, interaction: ChatInputCommandInteraction) => Promise<void>;
 }

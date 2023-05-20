@@ -1,7 +1,7 @@
-import { Bot } from "mineflayer";
-import { Client, WebhookClient } from "discord.js";
+import { WebhookClient } from "discord.js";
+import { ExtendedDiscordClient, ExtendedMinecraftBot } from "../modified_clients.js";
 
 export interface MineflayerEvent {
     name: string;
-    handler: (minecraftBot: Bot, discordClient: Client, webhookClient: WebhookClient) => Promise<void>;
+    handler: (minecraftBot: ExtendedMinecraftBot, discordClient: ExtendedDiscordClient, webhookClient: WebhookClient) => Promise<void>;
 }

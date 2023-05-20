@@ -1,7 +1,6 @@
 import { SlashCommand } from "./slash_command.js";
 import { SlashCommandBuilder } from "discord.js";
 import supabase from "../utils/supabase.js";
-import { getDiscordUserStatus, getMinecraftUserStatus } from "../utils/user_status.js";
 import { usernameToUUID } from "../utils/minecraft_players.js";
 
 export default <SlashCommand>{
@@ -40,7 +39,7 @@ export default <SlashCommand>{
 
         if (discordUser) {
             const id = discordUser.id;
-            if (await getDiscordUserStatus(minecraftBot, discordClient, id) !== "whitelisted") {
+            if (await discordClient.getDiscordUserStatus(id) !== "whitelisted") {
                 return void await interaction.reply({
                     content: "This user is not whitelisted!",
                     ephemeral: true
@@ -69,7 +68,7 @@ export default <SlashCommand>{
                 });
             }
 
-            if (await getMinecraftUserStatus(minecraftBot, discordClient, minecraftUsername) !== "whitelisted") {
+            if (await minecraftBot.getMinecraftUserStatus(minecraftUsername) !== "whitelisted") {
                 return void await interaction.reply({
                     content: "This user is not whitelisted!",
                     ephemeral: true

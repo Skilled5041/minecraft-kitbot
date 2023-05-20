@@ -1,6 +1,5 @@
 import { SlashCommand } from "./slash_command.js";
 import { EmbedBuilder, SlashCommandBuilder } from "discord.js";
-import { getDiscordUserStatus, getMinecraftUserStatus } from "../utils/user_status.js";
 export default <SlashCommand>{
     ownerOnly: false,
     data: new SlashCommandBuilder()
@@ -38,7 +37,7 @@ export default <SlashCommand>{
         let message = "";
 
         if (discordUser) {
-            const status = await getDiscordUserStatus(minecraftBot, discordClient, discordUser?.id ?? interaction.user.id);
+            const status = await discordClient.getDiscordUserStatus(discordUser?.id ?? interaction.user.id);
             if (status === "blacklisted") {
                 message += `${discordUser?.tag ?? interaction.user.tag} is blacklisted from the bot\n`;
             } else if (status === "whitelisted") {
@@ -49,7 +48,7 @@ export default <SlashCommand>{
         }
 
         if (minecraftUsername) {
-            const status = await getMinecraftUserStatus(minecraftBot, discordClient, minecraftUsername);
+            const status = await minecraftBot.getMinecraftUserStatus(minecraftUsername);
             if (status === "blacklisted") {
                 message += `${minecraftUsername} is blacklisted from the bot\n`;
             } else if (status === "whitelisted") {
