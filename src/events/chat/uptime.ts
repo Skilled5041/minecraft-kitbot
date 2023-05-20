@@ -1,11 +1,11 @@
-import { ChatCommand } from "./cat_command.js";
+import { ChatCommand } from "./chat_command.js";
 
 export default <ChatCommand>{
     name: "uptime",
     description: "Shows the bot's uptime.",
     usage: "<prefix>uptime",
-    execute: async (bot) => {
-        const botStartTime = bot.startTime;
+    execute: (minecraftBot) => {
+        const botStartTime = minecraftBot.startTime;
         const botUptime = Date.now() - (botStartTime ?? 0);
 
         let seconds = Math.floor(botUptime / 1000);
@@ -17,6 +17,6 @@ export default <ChatCommand>{
         minutes %= 60;
         hours %= 24;
 
-        bot.chat(`I have been online for ${days} days, ${hours} hours, ${minutes} minutes and ${seconds} seconds.`);
+        minecraftBot.safeChat(`I have been online for ${days} days, ${hours} hours, ${minutes} minutes and ${seconds} seconds.`);
     }
 };

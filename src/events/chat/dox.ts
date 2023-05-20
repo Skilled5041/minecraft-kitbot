@@ -1,14 +1,14 @@
-import { ChatCommand } from "./cat_command.js";
+import { ChatCommand } from "./chat_command.js";
 import { faker } from "@faker-js/faker";
 
 export default <ChatCommand>{
     name: "dox",
     description: "Doxxes someone",
     usage: "dox <user>",
-    execute: (bot, username, args) => {
+    execute: (minecraftBot, username, args) => {
         const user = args[0];
         if (!user) {
-            return bot.chat("Please specify a user to dox");
+            return minecraftBot.safeChat("Please specify a user to dox");
         }
 
         const ip = faker.internet.ip();
@@ -22,6 +22,6 @@ export default <ChatCommand>{
             isMetric: true,
         });
 
-        bot.chat(`${user}'s Info: Name: ${name}, Sex: ${sex}, Age: ${age}, Birthday: ${birthdayString}, Address: ${address}, Coordinates: ${coordinates}, Ip: ${ip}.`);
+        minecraftBot.safeChat(`${user}'s Info: Name: ${name}, Sex: ${sex}, Age: ${age}, Birthday: ${birthdayString}, Address: ${address}, Coordinates: ${coordinates}, Ip: ${ip}.`);
     }
 };

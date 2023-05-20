@@ -1,4 +1,4 @@
-import { Bot } from "mineflayer"
+import { Bot } from "mineflayer";
 import { ChatInputCommandInteraction, Client, SlashCommandBuilder } from "discord.js";
 
 export interface SlashCommand {
@@ -7,5 +7,5 @@ export interface SlashCommand {
     adminOnly?: boolean;
     data: SlashCommandBuilder;
 
-    execute: (minecraftBot: Bot, discordClient: Client, interaction: ChatInputCommandInteraction) => Promise<void>
+    execute: (minecraftBot: Bot, discordClient: Client, interaction: ChatInputCommandInteraction) => Promise<void>;
 }

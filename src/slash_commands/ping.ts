@@ -6,12 +6,12 @@ export default <SlashCommand>{
         .setName("ping")
         .setDescription("Returns the ping of the bot."),
 
-    async execute(bot, client, interaction: ChatInputCommandInteraction) {
+    async execute(minecraftBot, discordClient, interaction: ChatInputCommandInteraction) {
         const message = await interaction.reply({
             embeds: [new EmbedBuilder()
                 .setTitle("Pong!")
-                .setDescription(`API Latency: ${client.ws.ping > 1 ? `${client.ws.ping} ms` : "calculating..."}\nLatency: calculating...`)
-                .setColor("White")
+                .setDescription(`API Latency: ${discordClient.ws.ping > 1 ? `${discordClient.ws.ping} ms` : "calculating..."}\nLatency: calculating...`)
+                .setColor("Grey")
             ],
             fetchReply: true
         });
@@ -19,11 +19,11 @@ export default <SlashCommand>{
         const latency = message.createdTimestamp - interaction.createdTimestamp;
         let colour: ColorResolvable;
         switch (true) {
-            case latency < 200: {
+            case latency < 250: {
                 colour = "Green";
                 break;
             }
-            case latency < 500: {
+            case latency < 400: {
                 colour = "Yellow";
                 break;
             }
@@ -36,7 +36,7 @@ export default <SlashCommand>{
         await interaction.editReply({
             embeds: [new EmbedBuilder()
                 .setTitle("Pong!")
-                .setDescription(`API Latency: ${client.ws.ping > 1 ? `${client.ws.ping} ms` : "calculating..."}\nLatency: ${latency} ms`)
+                .setDescription(`API Latency: ${discordClient.ws.ping > 1 ? `${discordClient.ws.ping} ms` : "calculating..."}\nLatency: ${latency} ms`)
                 .setColor(colour)
             ]
         });

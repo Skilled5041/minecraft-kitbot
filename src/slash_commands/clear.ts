@@ -13,7 +13,7 @@ export default <SlashCommand>{
             .setMinValue(1)
             .setRequired(true)),
 
-    async execute(bot, client, interaction: ChatInputCommandInteraction) {
+    async execute(minecraftBot, discordClient, interaction: ChatInputCommandInteraction) {
         const amount = interaction.options.getInteger("amount")!;
         await interaction.reply({content: `Deleting ${amount} messages...`, ephemeral: true});
         (interaction.channel as TextChannel).bulkDelete(amount).then(async () => {

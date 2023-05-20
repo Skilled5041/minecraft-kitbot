@@ -1,11 +1,11 @@
-import { ChatCommand } from "./cat_command.js";
+import { ChatCommand } from "./chat_command.js";
 
 export default <ChatCommand>{
     name: "discordToken",
     usage: "<prefix>discordToken <token>",
     description: "Sends a discord token",
     aliases: ["token"],
-    execute: (bot) => {
+    execute: (minecraftBot) => {
         const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         const randomCharacter = (characters: string) => characters.charAt(Math.floor(Math.random() * characters.length));
 
@@ -22,6 +22,6 @@ export default <ChatCommand>{
         for (let i = 0; i < 27; i++) {
             token += randomCharacter(characters);
         }
-        bot.chat(`Here is a discord token: ${token}`);
+        minecraftBot.safeChat(`Here is a discord token: ${token}`);
     }
 };

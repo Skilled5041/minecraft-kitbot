@@ -1,16 +1,16 @@
-import { ChatCommand } from "./cat_command.js";
+import { ChatCommand } from "./chat_command.js";
 
 export default <ChatCommand>{
     name: "bestping",
     description: "Shows the player with the best ping on the server.",
     usage: "<prefix>bestping",
     aliases: ["bp"],
-    execute: (bot) => {
-        const bestPing = Object.values(bot.players).reduce((prev, curr) => {
+    execute: (minecraftBot) => {
+        const bestPing = Object.values(minecraftBot.players).reduce((prev, curr) => {
             return prev.ping < curr.ping ? prev : curr;
         });
 
-        bot.chat(`The player with the best ping is ${bestPing.username} with a ping of ${bestPing.ping}`);
+        minecraftBot.safeChat(`The player with the best ping is ${bestPing.username} with a ping of ${bestPing.ping}`);
 
     }
 };

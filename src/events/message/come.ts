@@ -1,12 +1,12 @@
 import { ChatTrigger } from "./message_trigger.js";
 import { Bot } from "mineflayer"
 
-const waitForAccept = (bot: Bot, message: any) => {
+const waitForAccept = (minecraftBot: Bot, message: any) => {
     if (message.toString().startsWith("Teleported to")) {
-        bot.removeListener("message", waitForAccept.bind(null, bot));
-        bot.setControlState("jump", true);
+        minecraftBot.removeListener("message", waitForAccept.bind(null, minecraftBot));
+        minecraftBot.setControlState("jump", true);
         setTimeout(() => {
-            bot.setControlState("jump", false);
+            minecraftBot.setControlState("jump", false);
         }, 1000);
     }
 };
@@ -14,12 +14,12 @@ const waitForAccept = (bot: Bot, message: any) => {
 export default <ChatTrigger>{
     name: "come",
     description: "Teleports to an admin.",
-    trigger: (bot, message: string) => {
+    trigger: (minecraftBot, message: string) => {
         return message.trim().includes("whispers: come") &&
-            bot.admins?.some((admin) => message.toLowerCase().includes(`${admin.toLowerCase()} whispers: come`));
+            minecraftBot.admins?.some((admin) => message.toLowerCase().includes(`${admin.toLowerCase()} whispers: come`));
     },
-    execute: (bot, message) => {
-        bot.chat(`/tpa ${message.split(" ")[0]}`);
-        bot.on("message", waitForAccept.bind(null, bot));
+    execute: (minecraftBot, message) => {
+        minecraftBot.safeChat(`/tpa ${message.split(" ")[0]}`);
+        minecraftBot.on("message", waitForAccept.bind(null, minecraftBot));
     }
 };

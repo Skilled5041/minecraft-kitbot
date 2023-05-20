@@ -9,5 +9,5 @@ export interface ChatCommand {
     aliases?: string[];
     adminOnly?: boolean;
 
-    execute: (bot: Bot, username: string, args: string[], discordBot: Client, webhookClient: WebhookClient) => void;
+    execute: (minecraftBot: Bot, username: string, args: string[], discordClient: Client, webhookClient: WebhookClient) => Promise<void> | void;
 }

@@ -1,18 +1,18 @@
-import { ChatCommand } from "./cat_command.js";
+import { ChatCommand } from "./chat_command.js";
 
 export default <ChatCommand>{
     name: "randomnumber",
     description: "Sends a random number between <min> and <max> (inclusive).",
     usage: "<prefix>randomnumber <min> <max>",
     aliases: ["random", "randomnum", "rand", "randnum"],
-    execute: (bot, _, args) => {
+    execute: (minecraftBot, username, args) => {
         if (args.length < 2) {
-            bot.chat("Please provide a minimum and maximum number.");
+            minecraftBot.chat("Please provide a minimum and maximum number.");
             return;
         }
         // Check if the arguments are numbers
         if (isNaN(Number(args[0])) || isNaN(Number(args[1]))) {
-            bot.chat("Please provide only valid numbers.");
+            minecraftBot.safeChat("Please provide only valid numbers.");
             return;
         }
 
@@ -25,6 +25,6 @@ export default <ChatCommand>{
             random = Math.floor(random);
         }
 
-        return bot.chat(`The random number is ${random}.`);
+        return minecraftBot.safeChat(`The random number is ${random}.`);
     }
 };

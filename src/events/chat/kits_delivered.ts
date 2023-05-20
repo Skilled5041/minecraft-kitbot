@@ -1,4 +1,4 @@
-import { ChatCommand } from "./cat_command.js";
+import { ChatCommand } from "./chat_command.js";
 import supabase from "../../utils/supabase.js";
 
 export default <ChatCommand> {
@@ -6,13 +6,13 @@ export default <ChatCommand> {
     description: "Gets the total number of kits delivered.",
     usage: "<prefix>kitsdelivered",
     aliases: ["kits_delivered", "kd", "deliveredcount"],
-    execute: async (bot) => {
+    execute: async (minecraftBot) => {
         const {data: kits_delivered, error: err1} = await supabase
             .from("stats")
             .select("kits_delivered");
 
         if (err1) console.log(err1);
 
-        bot.chat(`Kits delivered: ${kits_delivered?.[0].kits_delivered}`);
+        minecraftBot.safeChat(`Kits delivered: ${kits_delivered?.[0].kits_delivered}`);
     }
 }

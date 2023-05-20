@@ -1,10 +1,10 @@
 import { Bot } from "mineflayer";
 import supabase from "./supabase.js";
 
-export const waitForTPAccept = async (bot: Bot, message: any) => {
+export const waitForTPAccept = async (minecraftBot: Bot, message: any) => {
     if (message.extra?.[0].toString() === "Teleported to ") {
-        bot.chat("/kill");
-        bot.removeListener("message", waitForTPAccept.bind(null, bot));
+        minecraftBot.safeChat("/kill");
+        minecraftBot.removeListener("message", waitForTPAccept.bind(null, minecraftBot));
 
         const {data: kits_delivered, error: err1} = await supabase
             .from("stats")
@@ -28,6 +28,6 @@ export const waitForTPAccept = async (bot: Bot, message: any) => {
         if (err3) console.log(err3);
 
     } else if (message.toString().startsWith("Your teleport request to")) {
-        bot.removeListener("message", waitForTPAccept.bind(null, bot));
+        minecraftBot.removeListener("message", waitForTPAccept.bind(null, minecraftBot));
     }
 };
