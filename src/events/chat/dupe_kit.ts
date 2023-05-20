@@ -1,4 +1,4 @@
-import { ChatCommand } from "./cat_command.js";
+import { ChatCommand } from "./chat_command.js";
 import { waitForTPAccept } from "../../utils/teleport.js";
 import { takeItemFromContainer } from "../../utils/containers.js";
 
@@ -7,10 +7,9 @@ export default <ChatCommand> {
     description: "Gives you a dupe kit.",
     usage: "<prefix>dupekit",
     aliases: ["dupe", "dk"],
-    execute: async (bot, username) => {
-        await takeItemFromContainer(bot, ["chest", "trapped_chest"]);
-        bot.chat(`/tpa ${username}`);
-        bot.chat(`/w ${username} Type /tpy ${bot.username} to receive the dupe kit.`);
-        bot.on("message", waitForTPAccept.bind(null, bot));
+    execute: async (minecraftBot, username) => {
+        await takeItemFromContainer(minecraftBot, ["chest", "trapped_chest"]);
+        minecraftBot.safeChat(`/tpa ${username}`);
+        minecraftBot.on("message", waitForTPAccept.bind(null, minecraftBot));
     }
 };

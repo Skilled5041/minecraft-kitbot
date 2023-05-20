@@ -3,12 +3,12 @@ import { Bot } from "mineflayer";
 
 /**
  * Takes a single item from a container
- * @param bot The bot to use
+ * @param minecraftBot The bot to use
  * @param containers An array of containers to search for
  */
-export const takeItemFromContainer = async (bot: Bot, containers: Array<any>) => {
-    const chestToOpen = bot.findBlock({
-        matching: containers.map(name => bot.registry.blocksByName[name].id),
+export const takeItemFromContainer = async (minecraftBot: Bot, containers: Array<any>) => {
+    const chestToOpen = minecraftBot.findBlock({
+        matching: containers.map(name => minecraftBot.registry.blocksByName[name].id),
         maxDistance: 6
     });
 
@@ -17,7 +17,7 @@ export const takeItemFromContainer = async (bot: Bot, containers: Array<any>) =>
         return;
     }
 
-    const chest = await bot.openChest(chestToOpen);
+    const chest = await minecraftBot.openChest(chestToOpen);
 
     if (!chest) {
         console.log("Chest could not be opened");
@@ -36,8 +36,4 @@ export const takeItemFromContainer = async (bot: Bot, containers: Array<any>) =>
     await chest.close();
 
     console.log(`Took ${chalk.red(item.count)} ${chalk.redBright(item.name)} from chest`);
-};
-
-const depositAllItemsToChest = (block: Array<any>) => {
-
 };

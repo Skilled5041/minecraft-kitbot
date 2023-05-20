@@ -3,29 +3,47 @@ import { mineflayer as mineflayerViewer } from "prismarine-viewer";
 import * as movement from "mineflayer-movement";
 import * as fs from "fs";
 import chalk from "chalk";
-import { ChatCommand } from "./events/chat/cat_command.js";
+import { ChatCommand } from "./events/chat/chat_command.js";
 import { ChatTrigger } from "./events/message/message_trigger.js";
 import createTpsPlugin from "mineflayer-tps";
 import { Client, Collection, Events, IntentsBitField, WebhookClient } from "discord.js";
 import { SlashCommand } from "./slash_commands/slash_command.js";
 import dotenv from "dotenv";
-
+import { MineflayerEvent } from "./events/mineflayer_events.js";
 
 declare module "discord.js" {
     interface Client {
         slashCommands: Collection<string, SlashCommand>;
+        lastUserMessageTime: Map<string, number>;
     }
 }
+
+type Success = true | false;
 
 declare module "mineflayer" {
     interface Bot {
         prefix: string;
-        admins?: string[];
-        chatCommands?: Map<string, ChatCommand>;
-        commandAliases?: Map<string, string>;
-        messageTriggers?: Map<string, ChatTrigger>;
-        startTime?: number;
-        getTps?: () => number;
+        admins: string[];
+        chatCommands: Map<string, ChatCommand>;
+        commandAliases: Map<string, string>;
+        messageTriggers: Map<string, ChatTrigger>;
+        startTime: number;
+        getTps: () => number;
+        messageInfo: {
+            /**
+             * The UNIX time the next must be sent after
+             */
+            minimumNextMessageTime: number | null;
+            /**
+             * The UNIX time the last message was sent by a player
+             */
+            lastPlayerCommandTime: Map<string, number>
+        };
+        /**
+         * A wrapper for chat that prevents spam.
+         * @param message The message to send
+         */
+        safeChat: (message: string) => Success;
     }
 }
 
@@ -50,29 +68,48 @@ discordClient.once(Events.ClientReady, (c) => {
 });
 
 discordClient.slashCommands = new Collection();
+discordClient.lastUserMessageTime = new Map();
 
 void discordClient.login(process.env.DISCORD_BOT_TOKEN);
 
 
-const createModifiedBot = (options: BotOptions, prefix: string, admins: string[]): Bot => {
-    const bot: Bot = createBot({
+const createModifiedMinecraftBot = (options: BotOptions, prefix: string, admins: string[]): Bot => {
+    const minecraftBot: Bot = createBot({
         host: options.host,
         username: "solarion2",
         version: options.version,
         auth: options.auth,
         chatLengthLimit: 256,
     });
-    bot.prefix = prefix;
-    bot.admins = admins;
-    bot.chatCommands = new Map();
-    bot.messageTriggers = new Map();
-    bot.commandAliases = new Map();
-    bot.startTime = Date.now();
-    bot.admins = admins;
-    return bot;
+    minecraftBot.prefix = prefix;
+    minecraftBot.admins = admins;
+    minecraftBot.chatCommands = new Map();
+    minecraftBot.messageTriggers = new Map();
+    minecraftBot.commandAliases = new Map();
+    minecraftBot.startTime = Date.now();
+    minecraftBot.admins = admins;
+    minecraftBot.messageInfo = {
+        minimumNextMessageTime: null,
+        lastPlayerCommandTime: new Map(),
+    };
+
+    minecraftBot.safeChat = (message) => {
+        if (Date.now() < (minecraftBot.messageInfo.minimumNextMessageTime ?? 0) && !message.startsWith("/")) {
+            return false;
+        }
+
+        if (message.length > 255) {
+            return false;
+        }
+
+        minecraftBot.messageInfo.minimumNextMessageTime = Date.now() + 1000;
+        minecraftBot.chat(message);
+        return true;
+    };
+    return minecraftBot;
 };
 
-const minecraftBot: Bot = createModifiedBot({
+const minecraftBot: Bot = createModifiedMinecraftBot({
     host: "0b0t.org",
     username: "Solarion2",
     version: "1.12.2",
@@ -112,22 +149,14 @@ minecraftBot.on("respawn", () => {
     setTimeout(() => minecraftBot.setControlState("jump", false), 1000);
 });
 
-if (!minecraftBot.prefix) {
-    console.log(chalk.yellowBright("Prefix is not set."));
-    process.exit(1);
-}
-
-if (!minecraftBot.chatCommands) {
-    console.log(chalk.yellowBright("Chat commands are not set."));
-    process.exit(1);
-}
-
 const eventFiles: string[] = fs.readdirSync("./src/events").filter(file => file.includes(".js"));
 for (const file of eventFiles) {
-    const eventName: string = file.split(".")[0];
-    const event = (await import(`./events/${eventName}.js`)).default;
+    const fileName: string = file.split(".")[0];
+    const event: MineflayerEvent = (await import(`./events/${fileName}.js`)).default;
+    const eventName = event.name;
+    const handler = event.handler;
 
-    minecraftBot.on(eventName as keyof BotEvents, event.bind(null, minecraftBot, discordClient, webhookClient));
+    minecraftBot.on(eventName as keyof BotEvents, handler.bind(null, minecraftBot, discordClient, webhookClient));
     console.log(chalk.blueBright(`Registered event "${eventName}"`));
 }
 
@@ -170,6 +199,15 @@ discordClient.on(Events.InteractionCreate, async (interaction) => {
     const command = discordClient.slashCommands.get(interaction.commandName);
 
     if (!command) return;
+
+    if (Date.now() - (discordClient.lastUserMessageTime.get(interaction.user.id) ?? 0) < 1000) {
+        return void await interaction.reply({
+            content: "Please wait a while before using another command!",
+            ephemeral: true
+        });
+    }
+
+    discordClient.lastUserMessageTime.set(interaction.user.id, Date.now());
 
     try {
         await command.execute(minecraftBot, discordClient, interaction);

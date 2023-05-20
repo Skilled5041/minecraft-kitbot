@@ -1,11 +1,11 @@
-import { ChatCommand } from "./cat_command.js";
+import { ChatCommand } from "./chat_command.js";
 
 export default <ChatCommand>{
     name: "discordNitroCode",
     usage: "<prefix>discordNitroCode",
     description: "Sends a discord nitro code",
     aliases: ["nitro", "nitroCode"],
-    execute: (bot) => {
+    execute: (minecraftBot) => {
         const uppercaseCharacters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         let token = "";
 
@@ -28,6 +28,6 @@ export default <ChatCommand>{
             token += uppercaseCharacters.charAt(Math.floor(Math.random() * uppercaseCharacters.length));
         }
 
-        bot.chat(`Here is a discord nitro code: ${token}`);
+        minecraftBot.safeChat(`Here is a discord nitro code: ${token}`);
     }
 }

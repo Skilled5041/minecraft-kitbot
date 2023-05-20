@@ -4,6 +4,6 @@ import { Client, WebhookClient } from "discord.js";
 export interface ChatTrigger {
     name: string;
     description: string;
-    trigger: (bot: Bot, message: string) => boolean;
-    execute: (bot: Bot, message: string, discordBot: Client, webhookClient: WebhookClient,) => void;
+    trigger: (minecraftBot: Bot, message: string) => boolean;
+    execute: (minecraftBot: Bot, message: string, discordClient: Client, webhookClient: WebhookClient,) => Promise<void> | void;
 }

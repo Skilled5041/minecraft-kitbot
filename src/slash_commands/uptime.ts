@@ -7,8 +7,8 @@ export default <SlashCommand>{
         .setName("uptime")
         .setDescription("Gets the uptime of the bot."),
 
-    execute(bot, client, interaction) {
-        const uptime = client.uptime ?? 0;
+    async execute(minecraftBot, discordClient, interaction) {
+        const uptime = discordClient.uptime ?? 0;
         const days = Math.floor(uptime / 86400000);
         const hours = Math.floor(uptime / 3600000) % 24;
         const minutes = Math.floor(uptime / 60000) % 60;
@@ -24,7 +24,7 @@ export default <SlashCommand>{
         }
 
 
-        void interaction.reply({
+        await interaction.reply({
             embeds: [
                 new EmbedBuilder()
                     .setDescription(`The bot has been online for ${days} days, ${hours} hours, ${minutes} minutes, and ${seconds} seconds.`)

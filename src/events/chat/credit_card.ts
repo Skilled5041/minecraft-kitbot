@@ -1,4 +1,4 @@
-import { ChatCommand } from "./cat_command.js";
+import { ChatCommand } from "./chat_command.js";
 import { faker } from "@faker-js/faker";
 
 export default <ChatCommand>{
@@ -6,7 +6,7 @@ export default <ChatCommand>{
     usage: "creditcard",
     description: "Gives you information of a random credit card.",
     aliases: ["cc", "credit", "credit-card", "credit_card"],
-    execute: (bot) => {
+    execute: (minecraftBot) => {
         const issuer = faker.finance.creditCardIssuer();
         const cardNumber = faker.finance.creditCardNumber({issuer});
         const cvv = faker.finance.creditCardCVV();
@@ -15,6 +15,6 @@ export default <ChatCommand>{
         const expireMonth = expire.getMonth() + 1;
         const expireYear = expire.getFullYear();
 
-        bot.chat(`Issuer: ${issuer}, Card Number: ${cardNumber}, CVV: ${cvv}, Card Holder: ${cardHolder}, Expire: ${expireMonth}/${expireYear.toString().substring(2)}`);
+        minecraftBot.safeChat(`Issuer: ${issuer}, Card Number: ${cardNumber}, CVV: ${cvv}, Card Holder: ${cardHolder}, Expire: ${expireMonth}/${expireYear.toString().substring(2)}`);
     }
 };

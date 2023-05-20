@@ -9,13 +9,13 @@ export default <SlashCommand>{
         .addIntegerOption(option => option.setName("max").setDescription("The maximum number.").setRequired(true))
         .addIntegerOption(option => option.setName("decimals").setDescription("The number of decimals to round to. Set negative to round the number.").setRequired(false)),
 
-    execute(bot, client, interaction) {
+    async execute(minecraftBot, discordClient, interaction) {
         const min = interaction.options.getInteger("min") ?? 0;
         const max = interaction.options.getInteger("max") ?? 10;
 
 
         if (min > max) {
-            return interaction.reply("Min cannot be greater than max.");
+            return await interaction.reply("Min cannot be greater than max.");
         }
 
         const decimals = interaction.options.getInteger("decimals") ?? 0;
@@ -35,7 +35,7 @@ export default <SlashCommand>{
                 colour = "White";
         }
 
-        void interaction.reply({
+        await interaction.reply({
             embeds: [new EmbedBuilder()
                 .setColor(colour)
                 .setDescription(`The random number is ${rounded}.`)
