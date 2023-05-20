@@ -5,6 +5,7 @@ export default <ChatCommand> {
     name: "kitsdelivered",
     description: "Gets the total number of kits delivered.",
     usage: "<prefix>kitsdelivered",
+    cooldown: 3000,
     aliases: ["kits_delivered", "kd", "deliveredcount"],
     execute: async (minecraftBot) => {
         const {data: kits_delivered, error: err1} = await supabase

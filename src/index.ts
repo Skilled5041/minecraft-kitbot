@@ -10,15 +10,18 @@ import { Client, Collection, Events, IntentsBitField, WebhookClient } from "disc
 import { SlashCommand } from "./slash_commands/slash_command.js";
 import dotenv from "dotenv";
 import { MineflayerEvent } from "./events/mineflayer_events.js";
+import { getDiscordUserStatus } from "./utils/user_status.js";
 
 declare module "discord.js" {
     interface Client {
         slashCommands: Collection<string, SlashCommand>;
         lastUserMessageTime: Map<string, number>;
+        userStatus: Map<string, UserStatus>;
     }
 }
 
 type Success = true | false;
+export type UserStatus = "blacklisted" | "whitelisted" | "normal";
 
 declare module "mineflayer" {
     interface Bot {
@@ -29,6 +32,7 @@ declare module "mineflayer" {
         messageTriggers: Map<string, ChatTrigger>;
         startTime: number;
         getTps: () => number;
+        userStatus: Map<string, UserStatus>;
         messageInfo: {
             /**
              * The UNIX time the next must be sent after
@@ -39,6 +43,7 @@ declare module "mineflayer" {
              */
             lastPlayerCommandTime: Map<string, number>
         };
+        commandCooldowns: Map<string, Map<string, number>>;
         /**
          * A wrapper for chat that prevents spam.
          * @param message The message to send
@@ -69,6 +74,7 @@ discordClient.once(Events.ClientReady, (c) => {
 
 discordClient.slashCommands = new Collection();
 discordClient.lastUserMessageTime = new Map();
+discordClient.userStatus = new Map();
 
 void discordClient.login(process.env.DISCORD_BOT_TOKEN);
 
@@ -88,10 +94,12 @@ const createModifiedMinecraftBot = (options: BotOptions, prefix: string, admins:
     minecraftBot.commandAliases = new Map();
     minecraftBot.startTime = Date.now();
     minecraftBot.admins = admins;
+    minecraftBot.commandCooldowns = new Map();
     minecraftBot.messageInfo = {
         minimumNextMessageTime: null,
         lastPlayerCommandTime: new Map(),
     };
+    minecraftBot.userStatus = new Map();
 
     minecraftBot.safeChat = (message) => {
         if (Date.now() < (minecraftBot.messageInfo.minimumNextMessageTime ?? 0) && !message.startsWith("/")) {
@@ -196,11 +204,30 @@ for (const file of slashCommandFiles) {
 }
 discordClient.on(Events.InteractionCreate, async (interaction) => {
     if (!interaction.isChatInputCommand()) return;
+
+    if (await getDiscordUserStatus(minecraftBot, discordClient, interaction.user.id) === "blacklisted" && interaction.user.id !== "313816298461069313") {
+        return;
+    }
+
     const command = discordClient.slashCommands.get(interaction.commandName);
 
     if (!command) return;
 
-    if (Date.now() - (discordClient.lastUserMessageTime.get(interaction.user.id) ?? 0) < 1000) {
+    if (command.ownerOnly && interaction.user.id !== "313816298461069313") {
+        return void await interaction.reply({
+            content: "You do not have permission to use this command!",
+            ephemeral: true
+        });
+    }
+
+    if (command.whitelistOnly && discordClient.userStatus.get(interaction.user.id) !== "whitelisted") {
+        return void await interaction.reply({
+            content: "You do not have permission to use this command!",
+            ephemeral: true
+        });
+    }
+
+    if (Date.now() - (discordClient.lastUserMessageTime.get(interaction.user.id) ?? 0) < 2000) {
         return void await interaction.reply({
             content: "Please wait a while before using another command!",
             ephemeral: true

@@ -4,6 +4,7 @@ export default <ChatCommand>{
     name: "catfact",
     description: "Sends a random cat fact.",
     usage: "<prefix>catfact",
+    cooldown: 3000,
     execute: async (minecraftBot) => {
         const response = await fetch("https://catfact.ninja/fact");
         const data = await response.json();

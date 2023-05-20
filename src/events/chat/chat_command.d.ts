@@ -8,6 +8,8 @@ export interface ChatCommand {
     hideFromHelp?: boolean;
     aliases?: string[];
     adminOnly?: boolean;
+    cooldown?: number;
+    whitelistedOnly?: boolean;
 
     execute: (minecraftBot: Bot, username: string, args: string[], discordClient: Client, webhookClient: WebhookClient) => Promise<void> | void;
 }

@@ -10,6 +10,7 @@ export default <ChatCommand>{
             const page = Number(args[0]) || 1;
             let str = "Commands: ";
             for (const command of minecraftBot.chatCommands?.values() ?? []) {
+                if (command.hideFromHelp) continue;
                 str += `${command.name}, `;
             }
             str = str.slice(0, -2);

@@ -4,7 +4,8 @@ import { ChatInputCommandInteraction, Client, SlashCommandBuilder } from "discor
 export interface SlashCommand {
     aliases?: string[];
     hideFromHelp?: boolean;
-    adminOnly?: boolean;
+    ownerOnly?: boolean;
+    whitelistOnly?: boolean;
     data: SlashCommandBuilder;
 
     execute: (minecraftBot: Bot, discordClient: Client, interaction: ChatInputCommandInteraction) => Promise<void>;

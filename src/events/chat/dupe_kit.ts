@@ -6,6 +6,8 @@ export default <ChatCommand> {
     name: "dupekit",
     description: "Gives you a dupe kit.",
     usage: "<prefix>dupekit",
+    whitelistedOnly: true,
+    cooldown: 10000,
     aliases: ["dupe", "dk"],
     execute: async (minecraftBot, username) => {
         await takeItemFromContainer(minecraftBot, ["chest", "trapped_chest"]);

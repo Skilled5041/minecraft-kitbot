@@ -3,6 +3,7 @@ import { SlashCommandBuilder } from "discord.js";
 import { filterStrings, filterRegexes } from "../utils/safety.js";
 
 export default <SlashCommand>{
+    ownerOnly: true,
     data: new SlashCommandBuilder()
         .setDescription("Sends a raw chat message.")
         .setName("send-chat-raw")
@@ -15,10 +16,6 @@ export default <SlashCommand>{
         ),
 
     async execute(minecraftBot, discordClient, interaction) {
-        if (interaction.user.id !== "313816298461069313") return await interaction.reply({
-            content: "You are not allowed to use this command.",
-            ephemeral: true
-        });
         const message = interaction.options.getString("message", true);
 
         for (const filterString of filterStrings) {

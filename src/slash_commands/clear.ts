@@ -2,6 +2,7 @@ import { SlashCommand } from "./slash_command.js";
 import { PermissionsBitField, ChatInputCommandInteraction, SlashCommandBuilder, TextChannel } from "discord.js";
 
 export default <SlashCommand>{
+    whitelistOnly: false,
     data: new SlashCommandBuilder()
         .setName("clear")
         .setDescription("Deletes a specified number of messages from chat.")

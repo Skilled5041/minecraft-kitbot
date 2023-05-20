@@ -5,6 +5,7 @@ import { sanitise } from "../../utils/safety.js";
 export default <ChatCommand>{
     name: "dox",
     description: "Doxxes someone",
+    cooldown: 10000,
     usage: "dox <user>",
     execute: (minecraftBot, username, args) => {
         let user = args[0];
