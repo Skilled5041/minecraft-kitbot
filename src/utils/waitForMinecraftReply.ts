@@ -2,7 +2,7 @@ import { ExtendedDiscordClient, ExtendedMinecraftBot } from "$src/modified_clien
 import { WebhookClient } from "discord.js";
 import { ChatMessage } from "$src/events/message.js";
 
-type handle = (minecraftBot: ExtendedMinecraftBot, discordClient: ExtendedDiscordClient, webhookClient: WebhookClient, message: string) => boolean;
+type handle = (minecraftBot: ExtendedMinecraftBot, discordClient: ExtendedDiscordClient, webhookClient: WebhookClient, message: string) => boolean | Promise<boolean>;
 
 export const waitForMinecraftReply = async (minecraftBot: ExtendedMinecraftBot, discordClient: ExtendedDiscordClient, webhookClient: WebhookClient, timeout: number, handle: handle): Promise<void> => {
     return new Promise((resolve, reject) => {
@@ -18,8 +18,8 @@ export const waitForMinecraftReply = async (minecraftBot: ExtendedMinecraftBot, 
         };
 
         const func = async (message: ChatMessage) => {
-            const shouldUnregister = handle(minecraftBot, discordClient, webhookClient, message.toString());
-            if (shouldUnregister) {
+            const shouldUnregister = await handle(minecraftBot, discordClient, webhookClient, message.toString());
+            if (await shouldUnregister) {
                 resolvePromise();
             }
         };
