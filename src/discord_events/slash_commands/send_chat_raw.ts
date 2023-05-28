@@ -1,23 +1,22 @@
 import { SlashCommand } from "./slash_command.js";
 import { SlashCommandBuilder } from "discord.js";
-import { sanitise, filterRegexes, filterStrings } from "../utils/safety.js";
-import fs from "fs";
+import { filterStrings, filterRegexes } from "../../utils/safety.js";
 
 export default <SlashCommand>{
+    ownerOnly: true,
     data: new SlashCommandBuilder()
-        .setName("chat")
-        .setDescription("Sends a message to the 0b0t chat")
-        .addStringOption(option =>
-            option.setName("message")
-                .setDescription("The message to send to the chat")
-                .setMinLength(1)
-                .setMaxLength(215)
-                .setRequired(true)),
+        .setDescription("Sends a raw chat message.")
+        .setName("send-chat-raw")
+        .addStringOption(option => option
+            .setName("message")
+            .setDescription("The message to send.")
+            .setRequired(true)
+            .setMinLength(0)
+            .setMaxLength(255)
+        ),
 
     async execute(minecraftBot, discordClient, interaction) {
-        let message = interaction.options.getString("message") ?? "";
-        console.log(message);
-        message = sanitise(message);
+        const message = interaction.options.getString("message", true);
 
         for (const filterString of filterStrings) {
             if (message.includes(filterString)) {
@@ -31,15 +30,11 @@ export default <SlashCommand>{
             }
         }
 
-        const success = minecraftBot.safeChat(`[${interaction.user.tag}] ${message}`);
+        const success = minecraftBot.safeChat(message);
         if (success) {
             await interaction.reply({content: "Message sent.", ephemeral: true});
         } else {
             await interaction.reply({content: "Failed, please wait a bit before trying again.", ephemeral: true});
         }
-
-        fs.appendFile("./logs/chat_bridge.txt", `[${interaction.user.tag}] ${message}\n`, (err) => {
-            if (err) console.error(err);
-        });
     }
 };

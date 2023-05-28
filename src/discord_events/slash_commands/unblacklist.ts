@@ -1,7 +1,7 @@
 import { SlashCommand } from "./slash_command.js";
 import { SlashCommandBuilder } from "discord.js";
-import supabase from "../utils/supabase.js";
-import { usernameToUUID } from "../utils/minecraft_players.js";
+import supabase from "../../utils/supabase.js";
+import { usernameToUUID } from "../../utils/minecraft_players.js";
 
 export default <SlashCommand>{
     ownerOnly: true,

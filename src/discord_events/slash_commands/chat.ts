@@ -1,22 +1,24 @@
 import { SlashCommand } from "./slash_command.js";
 import { SlashCommandBuilder } from "discord.js";
-import { filterStrings, filterRegexes } from "../utils/safety.js";
+import { sanitise, filterRegexes, filterStrings } from "../../utils/safety.js";
+import fs from "fs";
+import { logToFile } from "$src/utils/log_errors.js";
 
 export default <SlashCommand>{
-    ownerOnly: true,
     data: new SlashCommandBuilder()
-        .setDescription("Sends a raw chat message.")
-        .setName("send-chat-raw")
-        .addStringOption(option => option
-            .setName("message")
-            .setDescription("The message to send.")
-            .setRequired(true)
-            .setMinLength(0)
-            .setMaxLength(255)
-        ),
+        .setName("chat")
+        .setDescription("Sends a message to the 0b0t chat")
+        .addStringOption(option =>
+            option.setName("message")
+                .setDescription("The message to send to the chat")
+                .setMinLength(1)
+                .setMaxLength(215)
+                .setRequired(true)),
 
     async execute(minecraftBot, discordClient, interaction) {
-        const message = interaction.options.getString("message", true);
+        let message = interaction.options.getString("message") ?? "";
+        logToFile(message, "./logs/chat_bridge.txt")
+        message = sanitise(message);
 
         for (const filterString of filterStrings) {
             if (message.includes(filterString)) {
@@ -30,11 +32,15 @@ export default <SlashCommand>{
             }
         }
 
-        const success = minecraftBot.safeChat(message);
+        const success = minecraftBot.safeChat(`[${interaction.user.tag}] ${message}`);
         if (success) {
             await interaction.reply({content: "Message sent.", ephemeral: true});
         } else {
             await interaction.reply({content: "Failed, please wait a bit before trying again.", ephemeral: true});
         }
+
+        fs.appendFile("./logs/chat_bridge.txt", `[${interaction.user.tag}] ${message}\n`, (err) => {
+            if (err) console.error(err);
+        });
     }
 };

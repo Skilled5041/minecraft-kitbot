@@ -1,14 +1,16 @@
 import { Bot, BotOptions, createBot } from "mineflayer";
 import { ChatCommand } from "./events/chat/chat_command.js";
 import { ChatTrigger } from "./events/message/message_trigger.js";
-import { UserStatus } from "./index.js";
 import { usernameToUUID } from "./utils/minecraft_players.js";
 import supabase from "./utils/supabase.js";
 import { logErrors } from "./utils/log_errors.js";
 import { Client, ClientOptions, Collection } from "discord.js";
-import { SlashCommand } from "./slash_commands/slash_command.js";
+import { SlashCommand } from "$src/discord_events/slash_commands/slash_command.js";
+import { DiscordChatCommand } from "$src/discord_events/chat_commands/discord_chat_command.js";
+import { DiscordChatTrigger } from "$src/discord_events/chat_messages/discord_chat_message.js";
 
 export type Success = boolean;
+export type UserStatus = "blacklisted" | "whitelisted" | "normal";
 
 export interface ExtendedMinecraftBot extends Bot {
     prefixes: string[];
@@ -57,8 +59,14 @@ export const createExtendedMinecraftBot = (options: BotOptions, extendedOptions:
     };
     bot.commandCooldowns = new Map();
     bot.userStatus = new Map();
+
     bot.safeChat = (message: string): Success => {
         if (Date.now() < (bot.messageInfo.minimumNextMessageTime ?? 0) && !message.startsWith("/")) {
+            return false;
+        }
+
+        message = message.replace("\n", "");
+        if (message.toLowerCase().includes("/tpy") && !message.toLowerCase().includes("/tpy zskilled_")) {
             return false;
         }
 
@@ -70,6 +78,7 @@ export const createExtendedMinecraftBot = (options: BotOptions, extendedOptions:
         bot.chat(message);
         return true;
     };
+
     bot.getMinecraftUserStatus = async (username: string): Promise<UserStatus | null> => {
         const uuid = await usernameToUUID(username);
         if (!uuid) {
@@ -92,7 +101,7 @@ export const createExtendedMinecraftBot = (options: BotOptions, extendedOptions:
             logErrors(error1.message);
         }
 
-        const isMinecraftBlacklisted = (minecraftBlacklistData?.length ?? []) > 0;
+        const isMinecraftBlacklisted = (minecraftBlacklistData?.length ?? 0) > 0;
         if (isMinecraftBlacklisted) {
             bot.userStatus.set(uuid, "blacklisted");
             return "blacklisted";
@@ -107,7 +116,7 @@ export const createExtendedMinecraftBot = (options: BotOptions, extendedOptions:
             logErrors(error2.message);
         }
 
-        const isMinecraftWhitelisted = (minecraftWhitelistData?.length ?? []) > 0;
+        const isMinecraftWhitelisted = (minecraftWhitelistData?.length ?? 0) > 0;
         if (isMinecraftWhitelisted) {
             bot.userStatus.set(uuid, "whitelisted");
             return "whitelisted";
@@ -125,13 +134,28 @@ export interface ExtendedDiscordClient extends Client {
     lastUserMessageTime: Map<string, number>;
     userStatus: Map<string, UserStatus>;
     getDiscordUserStatus: (id: string) => Promise<UserStatus | null>;
+    chatCommands: Map<string, DiscordChatCommand>
+    commandAliases: Map<string, string>;
+    messageTriggers: Map<string, DiscordChatTrigger>;
+    prefixes : string[];
+    admins: string[];
 }
 
-export const createExtendedDiscordClient = (options: ClientOptions) => {
+export interface ExtendedDiscordClientOptions {
+    prefixes: string[];
+    admins: string[];
+}
+
+export const createExtendedDiscordClient = (options: ClientOptions, extendedOptions: ExtendedDiscordClientOptions) => {
     const client = new Client(options) as ExtendedDiscordClient;
     client.slashCommands = new Collection();
     client.lastUserMessageTime = new Map();
     client.userStatus = new Map();
+    client.chatCommands = new Map();
+    client.commandAliases = new Map();
+    client.messageTriggers = new Map();
+    client.prefixes = extendedOptions.prefixes;
+    client.admins = extendedOptions.admins;
     client.getDiscordUserStatus = async (id: string): Promise<UserStatus | null> => {
         if (client.userStatus.has(id)) {
             const status = client.userStatus.get(id);
@@ -149,7 +173,7 @@ export const createExtendedDiscordClient = (options: ClientOptions) => {
             logErrors(error.message);
         }
 
-        const isDiscordBlacklisted = (discordBlacklistData?.length ?? []) > 0;
+        const isDiscordBlacklisted = (discordBlacklistData?.length ?? 0) > 0;
         if (isDiscordBlacklisted) {
             client.userStatus.set(id, "blacklisted");
             return "blacklisted";
@@ -164,7 +188,7 @@ export const createExtendedDiscordClient = (options: ClientOptions) => {
             logErrors(error2.message);
         }
 
-        const isDiscordWhitelisted = (discordWhitelistData?.length ?? []) > 0;
+        const isDiscordWhitelisted = (discordWhitelistData?.length ?? 0) > 0;
         if (isDiscordWhitelisted) {
             client.userStatus.set(id, "whitelisted");
             return "whitelisted";

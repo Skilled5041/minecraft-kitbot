@@ -1,23 +1,23 @@
 import { SlashCommand } from "./slash_command.js";
 import { SlashCommandBuilder } from "discord.js";
-import supabase from "../utils/supabase.js";
-import { usernameToUUID } from "../utils/minecraft_players.js";
+import supabase from "../../utils/supabase.js";
+import { usernameToUUID } from "../../utils/minecraft_players.js";
 
 export default <SlashCommand>{
     ownerOnly: true,
     data: new SlashCommandBuilder()
-        .setName("blacklist")
-        .setDescription("Blacklist a user from using the bot")
+        .setName("whitelist")
+        .setDescription("Whitelist a user to use the bot")
         .addStringOption(option => option
             .setName("minecraft_username")
             .setRequired(false)
-            .setDescription("The Minecraft username of the user to blacklist")
+            .setDescription("The Minecraft username of the user to whitelist")
             .setMaxLength(16)
             .setMinLength(2))
         .addUserOption(option => option
             .setName("discord_user")
             .setRequired(false)
-            .setDescription("The Discord user to blacklist")),
+            .setDescription("The Discord user to whitelist")),
 
     async execute(minecraftBot, discordClient, interaction) {
         const discordUser = interaction.options.getUser("discord_user");
@@ -25,7 +25,7 @@ export default <SlashCommand>{
 
         if (!discordUser && !minecraftUsername) {
             return void await interaction.reply({
-                content: "Please specify a user to blacklist!",
+                content: "Please specify a user to whitelist!",
                 ephemeral: true
             });
         }
@@ -40,83 +40,76 @@ export default <SlashCommand>{
         if (discordUser) {
             const id = discordUser.id;
 
-            const {error: whitelistError} = await supabase
-                .from("discord_users_whitelist")
-                .delete()
-                .eq("discord_id", id);
-            if (whitelistError) {
+            const status = await discordClient.getDiscordUserStatus(id);
+            if (status === "blacklisted") {
                 return await interaction.reply({
-                    content: `Failed to blacklist user: ${whitelistError.message}`,
+                    content: `Failed to whitelist user: User is blacklisted`,
                     ephemeral: true
                 });
             }
 
             const {error} = await supabase
-                .from("discord_users_blacklist")
+                .from("discord_users_whitelist")
                 .insert([
                     {discord_id: id},
                 ]);
             if (error) {
                 if (error.message.includes("duplicate key value violates unique constraint")) {
                     return await interaction.reply({
-                        content: "User is already blacklisted!",
+                        content: `Failed to whitelist user: User is already whitelisted`,
                         ephemeral: true
                     });
                 }
                 return await interaction.reply({
-                    content: `Failed to blacklist user: ${error.message}`,
+                    content: `Failed to whitelist user: ${error.message}`,
                     ephemeral: true
                 });
             }
 
-            discordClient.userStatus.set(id, "blacklisted");
+            discordClient.userStatus.set(id, "whitelisted");
         }
 
         if (minecraftUsername) {
             const uuid = await usernameToUUID(minecraftUsername);
             if (!uuid) {
                 return await interaction.reply({
-                    content: "Invalid Minecraft username!",
+                    content: `Failed to whitelist user: Minecraft user ${minecraftUsername} not found`,
                     ephemeral: true
                 });
             }
 
-            const {error: whitelistError} = await supabase
-                .from("minecraft_users_whitelist")
-                .delete()
-                .eq("minecraft_uuid", uuid);
-            if (whitelistError) {
+            const status = await minecraftBot.getMinecraftUserStatus(minecraftUsername);
+            if (status === "blacklisted") {
                 return await interaction.reply({
-                    content: `Failed to blacklist user: ${whitelistError.message}`,
+                    content: `Failed to whitelist user: User is blacklisted`,
                     ephemeral: true
                 });
             }
 
             const {error} = await supabase
-                .from("minecraft_users_blacklist")
+                .from("minecraft_users_whitelist")
                 .insert([
                     {minecraft_uuid: uuid},
                 ]);
             if (error) {
                 if (error.message.includes("duplicate key value violates unique constraint")) {
                     return await interaction.reply({
-                        content: "User is already blacklisted!",
+                        content: `Failed to whitelist user: User is already whitelisted`,
                         ephemeral: true
                     });
                 }
                 return await interaction.reply({
-                    content: `Failed to blacklist user: ${error.message}`,
+                    content: `Failed to whitelist user: ${error.message}`,
                     ephemeral: true
                 });
             }
 
-            minecraftBot.userStatus.set(uuid, "blacklisted");
+            minecraftBot.userStatus.set(uuid, "whitelisted");
         }
 
         await interaction.reply({
-            content: "Successfully blacklisted user!",
+            content: "User whitelisted!",
             ephemeral: true
         });
     }
 };
-

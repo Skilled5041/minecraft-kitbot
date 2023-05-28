@@ -4,7 +4,7 @@ export default <ChatCommand>{
     name: "help",
     description: "Shows a list of commands.",
     usage: "<prefix>help [command_name | page_number]",
-    execute: async (minecraftBot, username, args) => {
+    execute: async (minecraftBot, discordClient, webhookClient, username, args) => {
         if (args.length === 0 || !isNaN(Number(args[0]))) {
 
             const page = Number(args[0]) || 1;

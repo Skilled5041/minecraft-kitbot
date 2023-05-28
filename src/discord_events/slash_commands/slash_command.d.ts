@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
-import { ExtendedDiscordClient, ExtendedMinecraftBot } from "../modified_clients.js";
+import { ExtendedDiscordClient, ExtendedMinecraftBot } from "../../modified_clients.js";
 
 export interface SlashCommand {
     aliases?: string[];

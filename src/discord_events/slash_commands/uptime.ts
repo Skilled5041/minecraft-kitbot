@@ -1,6 +1,6 @@
 import { SlashCommand } from "./slash_command.js";
 import { ColorResolvable, EmbedBuilder, SlashCommandBuilder } from "discord.js";
-import { rgbToHex } from "../utils/colour.js";
+import { rgbToHex } from "../../utils/colour.js";
 
 export default <SlashCommand>{
     data: new SlashCommandBuilder()

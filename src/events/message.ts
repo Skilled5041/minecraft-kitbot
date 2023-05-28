@@ -1,12 +1,14 @@
 import { BotEvents } from "mineflayer";
 import { ColorResolvable, EmbedBuilder, WebhookClient } from "discord.js";
-import { isDeathMessage, isPlayerMessage } from "../utils/chat_message_regexes.js";
+import { isDeathMessage, isPlayerMessage } from "$src/utils/chat_message_regexes.js";
 import { MineflayerEvent } from "./mineflayer_events.js";
-import { ExtendedDiscordClient, ExtendedMinecraftBot } from "../modified_clients.js";
+import { ExtendedDiscordClient, ExtendedMinecraftBot } from "$src/modified_clients.js";
+import fs from "fs";
+import { ChatTrigger } from "./message/message_trigger.js";
+import chalk from "chalk";
 
-type ChatMessage = Parameters<BotEvents["message"]>[0];
+export type ChatMessage = Parameters<BotEvents["message"]>[0];
 
-// TODO: Make this use regexes
 const filter = (message: string) => {
     if (/[a-zA-Z0-9_]{2,16} wants to teleport to you./.test(message)) return true;
     if (/Type \/tpy [a-zA-Z0-9_]{2,16} to accept or \/tpn [a-zA-Z0-9_]{2,16} to deny./.test(message)) return true;
@@ -20,6 +22,20 @@ const filter = (message: string) => {
 
 export default <MineflayerEvent>{
     name: "message",
+
+    async register(minecraftBot: ExtendedMinecraftBot, discordClient: ExtendedDiscordClient, webhookClient: WebhookClient) {
+
+        const messageTriggerFiles: string[] = fs.readdirSync("./src/events/message").filter(file => file.endsWith(".js"));
+
+        for (const file of messageTriggerFiles) {
+            const trigger: ChatTrigger = (await import(`./message/${file}`)).default;
+            const triggerName = trigger.name;
+
+            minecraftBot.messageTriggers?.set(triggerName, trigger);
+            console.log(chalk.greenBright(`Registered message trigger "${triggerName}"`));
+        }
+    },
+
     async handler(minecraftBot: ExtendedMinecraftBot, discordClient: ExtendedDiscordClient, webhookClient: WebhookClient, message: ChatMessage) {
         const isPlayer = isPlayerMessage.exec(message.toString().trim());
 
@@ -30,6 +46,8 @@ export default <MineflayerEvent>{
             let colour: ColorResolvable = "Blue";
             if (username.toLowerCase() === minecraftBot.username.toLowerCase()) {
                 colour = 0xf1b3ff;
+            } else if (username.toLowerCase() === "zskilled_") {
+                colour = 0xc7e8ff;
             }
 
             const messageString = message
@@ -67,8 +85,8 @@ export default <MineflayerEvent>{
         }
 
         for (const trigger of minecraftBot.messageTriggers?.values() ?? []) {
-            if (trigger.trigger(minecraftBot, message.toString())) {
-                trigger.execute(minecraftBot, message.toString(), discordClient, webhookClient);
+            if (trigger.trigger(minecraftBot, discordClient, webhookClient, message.toString())) {
+                trigger.execute(minecraftBot);
             }
         }
     }

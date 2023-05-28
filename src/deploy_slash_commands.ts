@@ -1,15 +1,15 @@
 import { REST, Routes } from "discord.js";
 import dotenv from "dotenv";
 import fs from "fs";
-import { SlashCommand } from "./slash_commands/slash_command.js";
+import { SlashCommand } from "$src/discord_events/slash_commands/slash_command.js";
 
 dotenv.config();
 
 const commands = [];
 
-const commandFolder = fs.readdirSync("./src/slash_commands").filter(file => file.endsWith(".js"));
+const commandFolder = fs.readdirSync("./src/discord_events/slash_commands").filter(file => file.endsWith(".js"));
 for (const file of commandFolder) {
-    const command: SlashCommand = (await import(`./slash_commands/${file}`)).default
+    const command: SlashCommand = (await import(`./discord_events/slash_commands/${file}`)).default
     commands.push(command.data.toJSON());
 }
 

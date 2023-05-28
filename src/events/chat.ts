@@ -1,9 +1,30 @@
 import { WebhookClient } from "discord.js";
 import { MineflayerEvent } from "./mineflayer_events.js";
-import { ExtendedDiscordClient, ExtendedMinecraftBot } from "../modified_clients.js";
+import { ExtendedDiscordClient, ExtendedMinecraftBot } from "$src/modified_clients.js";
+import fs from "fs";
+import { ChatCommand } from "./chat/chat_command.js";
+import chalk from "chalk";
 
 export default <MineflayerEvent>{
     name: "chat",
+
+    async register(minecraftBot: ExtendedMinecraftBot, discordClient: ExtendedDiscordClient, webhookClient: WebhookClient) {
+        const chatCommandFiles: string[] = fs.readdirSync("./src/events/chat").filter(file => file.endsWith(".js"));
+
+        for (const file of chatCommandFiles) {
+            const command: ChatCommand = (await import(`./chat/${file}`)).default;
+            const commandName = command.name;
+            const aliases = command.aliases ?? [];
+
+            for (const alias of aliases) {
+                minecraftBot.commandAliases?.set(alias, commandName);
+            }
+
+            minecraftBot.chatCommands?.set(commandName, command);
+            console.log(chalk.greenBright(`Registered command "${commandName}"`));
+        }
+    },
+
     async handler(minecraftBot: ExtendedMinecraftBot, discordClient: ExtendedDiscordClient, webhookClient: WebhookClient, username: string, message: string) {
 
         if (!minecraftBot.prefixes) return;
@@ -19,7 +40,9 @@ export default <MineflayerEvent>{
         }
         minecraftBot.messageInfo.lastPlayerCommandTime.set(username, Date.now());
 
-        const args = message.slice(minecraftBot.prefixes.length).trim().split(/ +/g);
+        const prefix = minecraftBot.prefixes.find(prefix => message.startsWith(prefix)) ?? "";
+
+        const args = message.slice(prefix.length).trim().split(/ +/g);
         const command = args.shift()?.toLowerCase();
 
         const cmd = minecraftBot.chatCommands?.get(command ?? "") ??
@@ -46,7 +69,6 @@ export default <MineflayerEvent>{
         }
 
         minecraftBot.commandCooldowns.get(username)?.set(cmd.name, Date.now() + (cmd.cooldown ?? 0));
-        cmd.execute(minecraftBot, username, args, discordClient, webhookClient);
+        cmd.execute(minecraftBot);
     }
-
 };

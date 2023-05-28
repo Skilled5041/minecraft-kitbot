@@ -4,4 +4,5 @@ import { ExtendedDiscordClient, ExtendedMinecraftBot } from "../modified_clients
 export interface MineflayerEvent {
     name: string;
     handler: (minecraftBot: ExtendedMinecraftBot, discordClient: ExtendedDiscordClient, webhookClient: WebhookClient) => Promise<void>;
+    register?: (minecraftBot: ExtendedMinecraftBot, discordClient: ExtendedDiscordClient, webhookClient: WebhookClient) => void | Promise<void>;
 }

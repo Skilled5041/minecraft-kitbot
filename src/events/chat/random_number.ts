@@ -5,7 +5,7 @@ export default <ChatCommand>{
     description: "Sends a random number between <min> and <max> (inclusive).",
     usage: "<prefix>randomnumber <min> <max>",
     aliases: ["random", "randomnum", "rand", "randnum"],
-    execute: (minecraftBot, username, args) => {
+    execute: (minecraftBot, discordClient, webhookClient, username, args) => {
         if (args.length < 2) {
             minecraftBot.chat("Please provide a minimum and maximum number.");
             return;

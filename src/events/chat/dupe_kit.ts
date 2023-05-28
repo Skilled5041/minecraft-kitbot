@@ -1,17 +1,23 @@
 import { ChatCommand } from "./chat_command.js";
-import { waitForTPAccept } from "../../utils/teleport.js";
-import { takeItemFromContainer } from "../../utils/containers.js";
+import { takeItemFromContainer } from "$src/utils/containers.js";
+import { waitForMinecraftReply } from "$src/utils/waitForMinecraftReply.js";
 
-export default <ChatCommand> {
+export default <ChatCommand>{
     name: "dupekit",
     description: "Gives you a dupe kit.",
     usage: "<prefix>dupekit",
     whitelistedOnly: true,
     cooldown: 10000,
     aliases: ["dupe", "dk"],
-    execute: async (minecraftBot, username) => {
+    execute: async (minecraftBot, discordClient, webhookClient, username) => {
         await takeItemFromContainer(minecraftBot, ["chest", "trapped_chest"]);
         minecraftBot.safeChat(`/tpa ${username}`);
-        minecraftBot.on("message", waitForTPAccept.bind(null, minecraftBot));
+        await waitForMinecraftReply(minecraftBot, discordClient, webhookClient, 5000, (minecraftBot, discordClient, webhookClient, message) => {
+            if (message.startsWith("Teleported to")) {
+                minecraftBot.safeChat("/kill");
+                return true;
+            }
+            return false;
+        }).catch(() => {});
     }
 };

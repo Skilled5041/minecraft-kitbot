@@ -1,7 +1,7 @@
 import { Player } from "mineflayer";
 import { EmbedBuilder, TextChannel, WebhookClient } from "discord.js";
 import { MineflayerEvent } from "./mineflayer_events.js";
-import { ExtendedDiscordClient, ExtendedMinecraftBot } from "../modified_clients.js";
+import { ExtendedDiscordClient, ExtendedMinecraftBot } from "$src/modified_clients.js";
 
 export default <MineflayerEvent>{
     name: "playerLeft",

@@ -1,7 +1,7 @@
-import { WebhookClient } from "discord.js";
+import { Message, WebhookClient } from "discord.js";
 import { ExtendedDiscordClient, ExtendedMinecraftBot } from "../../modified_clients.js";
 
-export interface ChatCommand {
+export interface DiscordChatCommand {
     name: string;
     description: string;
     usage: string;
@@ -11,5 +11,5 @@ export interface ChatCommand {
     cooldown?: number;
     whitelistedOnly?: boolean;
 
-    execute: (minecraftBot: ExtendedMinecraftBot, discordClient: ExtendedDiscordClient, webhookClient: WebhookClient, username: string, args: string[]) => Promise<void> | void;
+    execute: (minecraftBot: ExtendedMinecraftBot, discordClient: ExtendedDiscordClient, webhookClient: WebhookClient, message: Message, args: string[]) => Promise<void> | void;
 }

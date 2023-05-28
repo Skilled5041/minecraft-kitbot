@@ -7,7 +7,7 @@ export default <ChatCommand>{
     description: "Doxxes someone",
     cooldown: 10000,
     usage: "dox <user>",
-    execute: (minecraftBot, username, args) => {
+    execute: (minecraftBot, discordClient, webhookClient, username, args ) => {
         let user = args[0];
         if (!user) {
             return minecraftBot.safeChat("Please specify a user to dox");

@@ -1,22 +1,5 @@
 import { ChatCommand } from "./chat_command.js";
-import { ExtendedMinecraftBot } from "../../modified_clients.js";
-
-const waitForNameColours = (minecraftBot: ExtendedMinecraftBot, username: string, message: any) => {
-    if (message.toString().startsWith("<NC> Usage: /nc <COLOR")) {
-        minecraftBot.removeListener("message", waitForNameColours.bind(null, minecraftBot, username));
-        minecraftBot.safeChat(`/w ${username} ${message.toString().split("(")[1].replace(")", "")}`);
-    }
-};
-
-const handleInvalidColour = (minecraftBot: ExtendedMinecraftBot, username: string, message: any) => {
-    if (message.toString().startsWith("<NC> Incorrect color")) {
-        minecraftBot.removeListener("message", handleInvalidColour.bind(null, minecraftBot, username));
-        minecraftBot.safeChat(`/w ${username} Invalid colour`);
-    } else if (message.toString().startsWith("<NC> Your name color has been changed:")) {
-        minecraftBot.removeListener("message", handleInvalidColour.bind(null, minecraftBot, username));
-        minecraftBot.safeChat(`/w ${username} Name colour set successfully`);
-    }
-};
+import { waitForMinecraftReply } from "$src/utils/waitForMinecraftReply.js";
 
 export default <ChatCommand>{
     name: "setnamecolour",
@@ -25,19 +8,28 @@ export default <ChatCommand>{
     aliases: ["snc", "setnamecolor", "setnc"],
     adminOnly: true,
     hideFromHelp: true,
-    execute: (minecraftBot, username, args) => {
+    async execute(minecraftBot, discordClient, webhookClient, username, args) {
         if (args.length === 0) {
             minecraftBot.safeChat("/nc");
-            minecraftBot.on("message", waitForNameColours.bind(null, minecraftBot, username));
-            setTimeout(() => {
-                minecraftBot.removeListener("message", waitForNameColours.bind(null, minecraftBot, username));
-            }, 2000);
+            await waitForMinecraftReply(minecraftBot, discordClient, webhookClient, 2000, (minecraftBot, discordClient, webhookClient, message) => {
+                if (message.startsWith("<NC> Usage: /nc <COLOR")) {
+                    minecraftBot.safeChat(`/w ${username} ${message.toString().split("(")[1].replace(")", "")}`);
+                    return true;
+                }
+                return false;
+            }).catch(() => {});
         } else {
             minecraftBot.safeChat(`/nc ${args[0]}`);
-            minecraftBot.on("message", handleInvalidColour.bind(null, minecraftBot, username));
-            setTimeout(() => {
-                minecraftBot.removeListener("message", handleInvalidColour.bind(null, minecraftBot, username));
-            }, 2000);
+            await waitForMinecraftReply(minecraftBot, discordClient, webhookClient, 2000, (minecraftBot, discordClient, webhookClient, message) => {
+                if (message.startsWith("<NC> Your name color has been changed:")) {
+                    minecraftBot.safeChat(`/w ${username} Name colour set successfully`);
+                    return true;
+                } else if (message.toString().startsWith("<NC> Incorrect color")) {
+                    minecraftBot.safeChat(`/w ${username} Invalid colour`);
+                    return true;
+                }
+                return false;
+            }).catch(() => {});
         }
     }
 };
