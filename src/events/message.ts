@@ -86,7 +86,7 @@ export default <MineflayerEvent>{
 
         for (const trigger of minecraftBot.messageTriggers?.values() ?? []) {
             if (trigger.trigger(minecraftBot, discordClient, webhookClient, message.toString())) {
-                trigger.execute(minecraftBot);
+                trigger.execute(minecraftBot, discordClient, webhookClient, message.toString());
             }
         }
     }

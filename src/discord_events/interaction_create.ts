@@ -51,7 +51,7 @@ export default <DiscordEvent>{
         discordClient.lastUserMessageTime.set(interaction.user.id, Date.now());
 
         try {
-            await command.execute(minecraftBot);
+            await command.execute(minecraftBot, discordClient, interaction);
         } catch (error) {
             console.error(error);
             if (interaction.replied || interaction.deferred) {

@@ -8,7 +8,7 @@ import * as process from "process";
 
 export default <DiscordEvent>{
     event: Events.MessageCreate,
-    async register(minecraftBot, discordClient) {
+    async register(minecraftBot, discordClient, webhookClient) {
         const chatCommandFiles = fs.readdirSync("./src/discord_events/chat_commands").filter(file => file.endsWith(".js"));
 
         for (const file of chatCommandFiles) {
@@ -42,7 +42,7 @@ export default <DiscordEvent>{
         for (const trigger of discordClient.messageTriggers?.values() ?? []) {
 
             if (trigger.trigger(minecraftBot, discordClient, webhookClient, message)) {
-                await trigger.execute(minecraftBot);
+                await trigger.execute(minecraftBot, discordClient, webhookClient, message);
             }
         }
 
@@ -85,6 +85,6 @@ export default <DiscordEvent>{
             return await message.reply("Please wait a bit before sending another command.");
         }
         discordClient.lastUserMessageTime.set(message.author.id, Date.now());
-        cmd.execute(minecraftBot);
+        cmd.execute(minecraftBot, discordClient, webhookClient, message, args);
     }
 };

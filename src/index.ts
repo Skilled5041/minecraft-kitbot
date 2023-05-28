@@ -89,7 +89,7 @@ for (const file of eventFiles) {
     console.log(chalk.blueBright(`Registered event "${eventName}"`));
 
     if (event.register) {
-        event.register(minecraftBot, discordClient);
+        event.register(minecraftBot, discordClient, webhookClient);
     }
 }
 
@@ -104,6 +104,6 @@ for (const file of discordEventFiles) {
     console.log(chalk.blueBright(`Registered discord event "${eventName}"`));
 
     if (event.register) {
-        event.register(minecraftBot, discordClient);
+        event.register(minecraftBot, discordClient, webhookClient);
     }
 }

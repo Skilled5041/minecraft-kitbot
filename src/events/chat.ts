@@ -69,6 +69,6 @@ export default <MineflayerEvent>{
         }
 
         minecraftBot.commandCooldowns.get(username)?.set(cmd.name, Date.now() + (cmd.cooldown ?? 0));
-        cmd.execute(minecraftBot);
+        cmd.execute(minecraftBot, discordClient, webhookClient, username, args);
     }
 };
