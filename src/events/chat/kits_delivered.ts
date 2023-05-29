@@ -1,5 +1,6 @@
 import { ChatCommand } from "./chat_command.js";
 import supabase from "../../utils/supabase.js";
+import { logErrors } from "$src/utils/log_errors.js";
 
 export default <ChatCommand> {
     name: "kitsdelivered",
@@ -12,7 +13,7 @@ export default <ChatCommand> {
             .from("stats")
             .select("kits_delivered");
 
-        if (err1) console.log(err1);
+        if (err1) logErrors(err1.message);
 
         minecraftBot.safeChat(`Kits delivered: ${kits_delivered?.[0].kits_delivered}`);
     }

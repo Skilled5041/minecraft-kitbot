@@ -38,7 +38,7 @@ void discordClient.login(process.env.DISCORD_BOT_TOKEN);
 
 const minecraftBot = createExtendedMinecraftBot({
     host: "0b0t.org",
-    username: "solarion2",
+    username: "Solarion2",
     version: "1.12.2",
     auth: "microsoft",
 }, {
