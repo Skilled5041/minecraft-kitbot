@@ -3,6 +3,7 @@ import { takeItemFromContainer } from "$src/utils/containers.js";
 import { waitForMinecraftReply } from "$src/utils/waitForMinecraftReply.js";
 import supabase from "$src/utils/supabase.js";
 import { getCurrentUTCDate } from "$src/utils/date.js";
+import { logErrors } from "$src/utils/log_errors.js";
 
 export default <ChatCommand>{
     name: "dupekit",
@@ -22,7 +23,7 @@ export default <ChatCommand>{
                     .from("stats")
                     .select("kits_delivered");
 
-                if (err1) console.log(err1);
+                if (err1) logErrors(err1.message);
 
 
                 const {error: err2} = await supabase
@@ -30,7 +31,7 @@ export default <ChatCommand>{
                     .update({kits_delivered: kits_delivered?.[0].kits_delivered + 1, last_updated: Date.now()})
                     .eq("id", "1");
 
-                if (err2) console.log(err2);
+                if (err2) logErrors(err2.message);
 
                 const currentDate = getCurrentUTCDate();
 
@@ -40,14 +41,14 @@ export default <ChatCommand>{
                     .select("kits_delivered")
                     .eq("day", currentDate);
 
-                if (err3) console.log(err3);
+                if (err3) logErrors(err3.message);
 
                 const {error: err4} = await supabase
                     .from("daily_kits_delivered")
                     .update({kits_delivered: daily_kits_delivered?.[0].kits_delivered + 1})
                     .eq("day", currentDate);
 
-                if (err4) console.log(err4);
+                if (err4) logErrors(err4.message);
 
                 return true;
             }

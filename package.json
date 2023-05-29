@@ -5,8 +5,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "tsc-alias && node src/index.js",
-    "deploy": "tsc-alias && node src/deploy_slash_commands.js",
+    "start": "tsc && tsc-alias && node src/index.js",
+    "deploy": "tsc && tsc-alias && node src/deploy_slash_commands.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
