@@ -1,6 +1,6 @@
 import { ChatCommand } from "./chat_command.js";
 import { takeItemFromContainer } from "$src/utils/containers.js";
-import { waitForMinecraftReply } from "$src/utils/waitForMinecraftReply.js";
+import { waitForMinecraftReply } from "$src/utils/wait_for_minecraft_reply.js";
 import supabase from "$src/utils/supabase.js";
 import { getCurrentUTCDate } from "$src/utils/date.js";
 import { logErrors } from "$src/utils/log_errors.js";
@@ -9,9 +9,10 @@ export default <ChatCommand>{
     name: "dupekit",
     description: "Gives you a dupe kit.",
     usage: "<prefix>dupekit",
-    whitelistedOnly: true,
+    // whitelistedOnly: true,
     cooldown: 10000,
     aliases: ["dupe", "dk"],
+    // TODO: Error handling
     execute: async (minecraftBot, discordClient, webhookClient, username) => {
         await takeItemFromContainer(minecraftBot, ["chest", "trapped_chest"]);
         minecraftBot.safeChat(`/tpa ${username}`);

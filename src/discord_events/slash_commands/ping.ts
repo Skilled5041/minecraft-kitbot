@@ -1,12 +1,12 @@
 import { SlashCommand } from "./slash_command.js";
-import { ChatInputCommandInteraction, ColorResolvable, EmbedBuilder, SlashCommandBuilder } from "discord.js";
+import { ColorResolvable, EmbedBuilder, SlashCommandBuilder } from "discord.js";
 
 export default <SlashCommand>{
     data: new SlashCommandBuilder()
         .setName("ping")
         .setDescription("Returns the ping of the bot."),
 
-    async execute(minecraftBot, discordClient, interaction: ChatInputCommandInteraction) {
+    async execute(minecraftBot, discordClient, webhookClient, interaction) {
         const message = await interaction.reply({
             embeds: [new EmbedBuilder()
                 .setTitle("Pong!")

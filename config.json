@@ -1,0 +1,13 @@
+{
+  "serverIP": "0b0t.org",
+  "username": "solarion2",
+  "port": "22222",
+  "version": "1.12.2",
+  "prefixes": [
+    "^"
+  ],
+  "admins": [
+    "solarion2",
+    "ZSKILLED_"
+  ]
+}

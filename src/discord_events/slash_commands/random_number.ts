@@ -9,7 +9,7 @@ export default <SlashCommand>{
         .addIntegerOption(option => option.setName("max").setDescription("The maximum number.").setRequired(true))
         .addIntegerOption(option => option.setName("decimals").setDescription("The number of decimals to round to. Set negative to round the number.").setRequired(false)),
 
-    async execute(minecraftBot, discordClient, interaction) {
+    async execute(minecraftBot, discordClient, webhookClient, interaction) {
         const min = interaction.options.getInteger("min") ?? 0;
         const max = interaction.options.getInteger("max") ?? 10;
 

@@ -19,7 +19,7 @@ export default <SlashCommand>{
             .setRequired(false)
             .setDescription("The Discord user to blacklist")),
 
-    async execute(minecraftBot, discordClient, interaction) {
+    async execute(minecraftBot, discordClient, webhookClient, interaction) {
         const discordUser = interaction.options.getUser("discord_user");
         const minecraftUsername = interaction.options.getString("minecraft_username");
 

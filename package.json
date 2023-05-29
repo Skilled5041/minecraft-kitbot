@@ -20,6 +20,7 @@
     "cross-spawn": "^7.0.3",
     "discord.js": "^14.11.0",
     "dotenv": "^16.0.3",
+    "is-image": "^3.1.0",
     "mineflayer": "^4.8.1",
     "mineflayer-movement": "^0.4.4",
     "mineflayer-tps": "^1.0.1",

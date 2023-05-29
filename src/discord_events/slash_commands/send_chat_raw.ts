@@ -15,7 +15,7 @@ export default <SlashCommand>{
             .setMaxLength(255)
         ),
 
-    async execute(minecraftBot, discordClient, interaction) {
+    async execute(minecraftBot, discordClient, webhookClient, interaction) {
         const message = interaction.options.getString("message", true);
 
         for (const filterString of filterStrings) {

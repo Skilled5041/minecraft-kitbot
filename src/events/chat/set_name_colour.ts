@@ -1,5 +1,5 @@
 import { ChatCommand } from "./chat_command.js";
-import { waitForMinecraftReply } from "$src/utils/waitForMinecraftReply.js";
+import { waitForMinecraftReply } from "$src/utils/wait_for_minecraft_reply.js";
 
 export default <ChatCommand>{
     name: "setnamecolour",

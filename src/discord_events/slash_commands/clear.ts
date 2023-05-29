@@ -1,5 +1,5 @@
 import { SlashCommand } from "./slash_command.js";
-import { PermissionsBitField, ChatInputCommandInteraction, SlashCommandBuilder, TextChannel } from "discord.js";
+import { PermissionsBitField, SlashCommandBuilder, TextChannel } from "discord.js";
 
 export default <SlashCommand>{
     whitelistOnly: false,
@@ -14,7 +14,7 @@ export default <SlashCommand>{
             .setMinValue(1)
             .setRequired(true)),
 
-    async execute(minecraftBot, discordClient, interaction: ChatInputCommandInteraction) {
+    async execute(minecraftBot, discordClient, webhookClient, interaction) {
         const amount = interaction.options.getInteger("amount")!;
         await interaction.reply({content: `Deleting ${amount} messages...`, ephemeral: true});
         (interaction.channel as TextChannel).bulkDelete(amount).then(async () => {

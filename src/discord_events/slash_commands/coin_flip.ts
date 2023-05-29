@@ -6,7 +6,7 @@ export default <SlashCommand>{
         .setName("coin-flip")
         .setDescription("Flips a coin."),
 
-    async execute(minecraftBot, discordClient, interaction) {
+    async execute(minecraftBot, discordClient, webhookClient, interaction) {
         const coin = Math.floor(Math.random() * 2);
         if (coin === 1) {
             await interaction.reply({

@@ -1,6 +1,7 @@
 import { DiscordChatTrigger } from "$src/discord_events/chat_messages/discord_chat_message.js";
 import { logToFile } from "$src/utils/log_errors.js";
 import { filterRegexes, filterStrings, sanitise } from "$src/utils/safety.js";
+import { EmbedBuilder } from "discord.js";
 
 export default <DiscordChatTrigger>{
     name: "chat_bridge",
@@ -15,7 +16,14 @@ export default <DiscordChatTrigger>{
         }
 
         if (Date.now() - (discordClient.lastUserMessageTime.get(message.author.id) ?? 0) < 1500) {
-            return await message.reply("Please wait a bit before sending another bridge message.");
+            return await message.reply({
+                embeds: [
+                    new EmbedBuilder()
+                    .setTitle("Error")
+                    .setDescription("Please wait a bit before sending another bridge message.")
+                    .setColor("Red")
+                ]
+            });
         }
         discordClient.lastUserMessageTime.set(message.author.id, Date.now());
 

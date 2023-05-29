@@ -4,7 +4,7 @@ import { ColorResolvable, EmbedBuilder } from "discord.js";
 export default <DiscordChatCommand>{
     name: "ping",
     description: "Replies with the ping of the bot.",
-    usage: "ping",
+    usage: "<prefix>ping",
     cooldown: 1000,
     async execute(minecraftBot, discordClient, webhookClient, message) {
         const reply = await message.reply({

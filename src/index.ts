@@ -38,11 +38,12 @@ void discordClient.login(process.env.DISCORD_BOT_TOKEN);
 
 const minecraftBot = createExtendedMinecraftBot({
     host: "0b0t.org",
-    username: "Solarion2",
+    username: "solarion2",
+    password: process.env.MINECRAFT_BOT_PASSWORD ?? "",
     version: "1.12.2",
     auth: "microsoft",
 }, {
-    prefixes: ["&"],
+    prefixes: ["^"],
     admins: ["solarion2", "ZSKILLED_"],
 });
 const tpsPlugin = createTpsPlugin(mineflayer);

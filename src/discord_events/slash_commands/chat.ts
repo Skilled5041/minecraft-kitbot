@@ -15,7 +15,7 @@ export default <SlashCommand>{
                 .setMaxLength(215)
                 .setRequired(true)),
 
-    async execute(minecraftBot, discordClient, interaction) {
+    async execute(minecraftBot, discordClient, webhookClient, interaction) {
         let message = interaction.options.getString("message") ?? "";
         logToFile(message, "./logs/chat_bridge.txt")
         message = sanitise(message);

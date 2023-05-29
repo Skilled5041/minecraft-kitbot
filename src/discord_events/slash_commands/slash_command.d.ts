@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, SlashCommandBuilder } from "discord.js";
+import { ChatInputCommandInteraction, SlashCommandBuilder, WebhookClient } from "discord.js";
 import { ExtendedDiscordClient, ExtendedMinecraftBot } from "../../modified_clients.js";
 
 export interface SlashCommand {
@@ -8,5 +8,5 @@ export interface SlashCommand {
     whitelistOnly?: boolean;
     data: SlashCommandBuilder;
 
-    execute: (minecraftBot: ExtendedMinecraftBot, discordClient: ExtendedDiscordClient, interaction: ChatInputCommandInteraction) => Promise<void>;
+    execute: (minecraftBot: ExtendedMinecraftBot, discordClient: ExtendedDiscordClient, webhookClient: WebhookClient, interaction: ChatInputCommandInteraction) => Promise<void>;
 }

@@ -4,6 +4,7 @@ import fs from "fs";
 import { SlashCommand } from "$src/discord_events/slash_commands/slash_command.js";
 import chalk from "chalk";
 import { ExtendedDiscordClient, ExtendedMinecraftBot } from "$src/modified_clients.js";
+import { logErrors } from "$src/utils/log_errors.js";
 
 export default <DiscordEvent>{
     event: Events.InteractionCreate,
@@ -28,14 +29,14 @@ export default <DiscordEvent>{
         if (!command) return;
 
         if (command.ownerOnly && interaction.user.id !== "313816298461069313") {
-            return void await interaction.reply({
+            return await interaction.reply({
                 content: "You do not have permission to use this command!",
                 ephemeral: true
             });
         }
 
         if (command.whitelistOnly && discordClient.userStatus.get(interaction.user.id) !== "whitelisted") {
-            return void await interaction.reply({
+            return await interaction.reply({
                 content: "You do not have permission to use this command!",
                 ephemeral: true
             });
@@ -51,9 +52,9 @@ export default <DiscordEvent>{
         discordClient.lastUserMessageTime.set(interaction.user.id, Date.now());
 
         try {
-            await command.execute(minecraftBot, discordClient, interaction);
+            await command.execute(minecraftBot, discordClient, webhookClient, interaction);
         } catch (error) {
-            console.error(error);
+            logErrors((error as object).toString());
             if (interaction.replied || interaction.deferred) {
                 await interaction.followUp({
                     content: "There was an error while executing this command!",

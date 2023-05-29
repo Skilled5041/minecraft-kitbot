@@ -7,7 +7,7 @@ export default <SlashCommand>{
         .setName("uptime")
         .setDescription("Gets the uptime of the bot."),
 
-    async execute(minecraftBot, discordClient, interaction) {
+    async execute(minecraftBot, discordClient, webhookClient, interaction) {
         const uptime = discordClient.uptime ?? 0;
         const days = Math.floor(uptime / 86400000);
         const hours = Math.floor(uptime / 3600000) % 24;
